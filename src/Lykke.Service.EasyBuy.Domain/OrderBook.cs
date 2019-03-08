@@ -14,7 +14,7 @@ namespace Lykke.Service.EasyBuy.Domain
 
         public List<OrderBookLimitOrder> BuyLimitOrders { get; set; }
 
-        public decimal GetMidPrice()
+        public decimal? GetMidPrice()
         {
             var bestSellOrder = SellLimitOrders
                 .OrderBy(x => x.Price)
@@ -23,8 +23,17 @@ namespace Lykke.Service.EasyBuy.Domain
             var bestBuyOrder = BuyLimitOrders
                 .OrderByDescending(x => x.Price)
                 .FirstOrDefault();
+
+            if (bestBuyOrder == null && bestSellOrder != null)
+                return bestSellOrder.Price;
             
-            return (bestSellOrder.Price + bestBuyOrder.Price) / 2m;
+            if (bestBuyOrder != null && bestSellOrder == null)
+                return bestBuyOrder.Price;
+            
+            if(bestBuyOrder != null && bestSellOrder != null)
+                return (bestSellOrder.Price + bestBuyOrder.Price) / 2m;
+
+            return null;
         }
     }
 }

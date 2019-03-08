@@ -76,7 +76,14 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
             var markupCoefficient = instrument.Markup ?? defaultSettings.Markup;
 
-            var markupAbsolute = orderBook.GetMidPrice() * markupCoefficient;
+            var midPrice = orderBook.GetMidPrice();
+            
+            if(!midPrice.HasValue)
+            {
+                throw new FailedOperationException("Not enough liquidity.");
+            }
+            
+            var markupAbsolute = midPrice.Value * markupCoefficient;
             
             var volumes = new List<decimal>();
             var remainingVolume = quotingVolume;

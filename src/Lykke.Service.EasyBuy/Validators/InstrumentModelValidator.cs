@@ -7,9 +7,9 @@ using Lykke.Service.EasyBuy.Domain.Services;
 namespace Lykke.Service.EasyBuy.Validators
 {
     [UsedImplicitly]
-    public class InstrumentEditModelValidator : AbstractValidator<InstrumentModel>
+    public class InstrumentModelValidator : AbstractValidator<InstrumentModel>
     {
-        public InstrumentEditModelValidator(ISettingsService settingsService)
+        public InstrumentModelValidator(ISettingsService settingsService)
         {
             var defaultSettings = settingsService.GetDefaultSettingsAsync().GetAwaiter().GetResult();
             
