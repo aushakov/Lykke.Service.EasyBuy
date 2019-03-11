@@ -30,7 +30,7 @@ namespace Lykke.Service.EasyBuy.Domain
             if (bestBuyOrder != null && bestSellOrder == null)
                 return bestBuyOrder.Price;
             
-            if(bestBuyOrder != null && bestSellOrder != null)
+            if(bestBuyOrder != null)
                 return (bestSellOrder.Price + bestBuyOrder.Price) / 2m;
 
             return null;

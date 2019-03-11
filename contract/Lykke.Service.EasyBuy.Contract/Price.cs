@@ -9,7 +9,7 @@ namespace Lykke.Service.EasyBuy.Contract
     /// Represents a price update.
     /// </summary>
     [PublicAPI]
-    public class PublishPriceModel
+    public class Price
     {
         /// <summary>
         /// Price's unique identifier.

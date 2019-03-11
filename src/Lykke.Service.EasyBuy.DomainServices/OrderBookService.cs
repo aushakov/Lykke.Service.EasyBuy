@@ -20,7 +20,10 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
         public IReadOnlyList<string> GetExistingExchanges()
         {
-            return Mapper.Map<IReadOnlyList<string>>(_orderBooks.Select(x => x.Key));
+            lock (_sync)
+            {
+                return Mapper.Map<IReadOnlyList<string>>(_orderBooks.Select(x => x.Key));
+            }
         }
 
         public Task HandleAsync(string exchange, OrderBook orderBook)
