@@ -18,6 +18,9 @@ namespace Lykke.Service.EasyBuy.DomainServices.Timers
         {
             if (_started)
                 return;
+            
+            if(Log == null)
+                throw new Exception($"{nameof(Log)} should not be null.");
 
             _started = true;
 
