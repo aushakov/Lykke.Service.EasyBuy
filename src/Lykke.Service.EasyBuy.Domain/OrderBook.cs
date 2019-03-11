@@ -24,16 +24,17 @@ namespace Lykke.Service.EasyBuy.Domain
                 .OrderByDescending(x => x.Price)
                 .FirstOrDefault();
 
-            if (bestBuyOrder == null && bestSellOrder != null)
-                return bestSellOrder.Price;
-            
-            if (bestBuyOrder != null && bestSellOrder == null)
-                return bestBuyOrder.Price;
-            
-            if(bestBuyOrder != null)
-                return (bestSellOrder.Price + bestBuyOrder.Price) / 2m;
+            if (bestBuyOrder == null)
+            {
+                return bestSellOrder?.Price ?? default(decimal);
+            }
 
-            return null;
+            if (bestSellOrder == null)
+            {
+                return bestBuyOrder.Price;
+            }
+            
+            return (bestSellOrder.Price + bestBuyOrder.Price) / 2m;
         }
     }
 }

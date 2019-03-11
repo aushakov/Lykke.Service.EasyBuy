@@ -124,7 +124,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
             {
                 await PersistWithStatusAsync(order, OrderStatus.Cancelled);
 
-                _log.Error(e);
+                _log.Warning("ME call failed.", priceId, e);
                 
                 throw;
             }
