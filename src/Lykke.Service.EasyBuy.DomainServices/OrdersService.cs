@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common;
 using Common.Log;
@@ -186,7 +187,12 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
             return order;
         }
-        
+
+        public Task<IReadOnlyList<Order>> GetAllAsync(string walletId, string assetPair, DateTime? timeFrom, DateTime? timeTo, int limit)
+        {
+            return _ordersRepository.GetAllAsync(walletId, assetPair, timeFrom, timeTo, limit);
+        }
+
         private Task PersistWithStatusAsync(Order order, OrderStatus status)
         {
             order.Status = status;

@@ -129,7 +129,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
                 Exchange = instrument.Exchange,
                 BaseVolume = volumeBase,
                 QuotingVolume = quotingVolume,
-                Markup = markupAbsolute,
+                Markup = markupCoefficient,
                 OriginalPrice = originalPrice,
                 Type = type,
                 ValidFrom = validFrom,

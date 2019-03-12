@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -47,11 +49,11 @@ namespace Lykke.Service.EasyBuy.Controllers
             catch (FailedOperationException exception)
             {
                 _log.Error(exception);
-                    
+
                 throw new ValidationApiException(HttpStatusCode.BadRequest, exception.Message);
             }
         }
-        
+
         /// <inheritdoc />
         [HttpGet("{walletId}/{id}")]
         [ProducesResponseType(typeof(OrderModel), (int) HttpStatusCode.OK)]
@@ -66,6 +68,22 @@ namespace Lykke.Service.EasyBuy.Controllers
             {
                 throw new ValidationApiException(HttpStatusCode.NotFound, "Order does not exist.");
             }
+        }
+
+        /// <inheritdoc />
+        [HttpPut]
+        [ProducesResponseType(typeof(IReadOnlyList<OrderModel>), (int) HttpStatusCode.OK)]
+        public async Task<IReadOnlyList<OrderModel>> GetAllOrdersAsync(
+            [FromQuery] string walletId,
+            [FromQuery] string assetPair,
+            [FromQuery] DateTime? timeFrom,
+            [FromQuery] DateTime? timeTo,
+            [FromQuery] int limit)
+        {
+            if (limit <= 0)
+                throw new ValidationApiException(HttpStatusCode.BadRequest, $"{nameof(limit)} should be positive integer.");
+            
+            return Mapper.Map<IReadOnlyList<OrderModel>>(await _ordersService.GetAllAsync(walletId, assetPair, timeFrom, timeTo, limit));
         }
     }
 }
