@@ -1,14 +1,40 @@
 EasyBuyService:
+  InstanceName:
+    settings-key: EasyBuyService-InstanceName
+
+  WalletId:
+    settings-key: EasyBuyService-WalletId
+  
   Db:
     DataConnectionString:
       settings-key: EasyBuyService-DataConnectionString
       types:
         - AzureTableStorage
 
-    LogsConnString:
+    LogsConnectionString:
       settings-key: EasyBuyService-LogsConnectionString
       types:
         - AzureTableStorage
+
+  PricesPublish:
+    ConnectionString:
+      settings-key: EasyBuyService-PricesPublishConnectionString
+      types:
+        - RabbitMq
+    ExchangeName:
+      settings-key: EasyBuyService-PricesPublishExchangeName
+  
+  OrderBookSource:
+    ConnectionString:
+      settings-key: EasyBuyService-OrderBookSourceConnectionString
+      types:
+        - RabbitMq
+    QueueSuffix:
+      settings-key: EasyBuyService-OrderBookSourceQueueSuffix
+    Exchanges:
+      settings-key: EasyBuyService-OrderBookSourceExchanges
+      types:
+        - JsonArray
 
 SlackNotifications:
   AzureQueue:
@@ -18,6 +44,22 @@ SlackNotifications:
         - AzureTableStorage
     QueueName:
       settings-key: SlackQueueName
+
+AssetsServiceClient:
+  ServiceUrl:
+    settings-key: AssetsServiceUrl
+
+BalancesServiceClient:
+  ServiceUrl:
+    settings-key: BalancesServiceUrl
+
+ExchangeOperationsServiceClient:
+  ServiceUrl:
+    settings-key: ExchangeOperationsServiceUrl
+
+ClientAccountServiceClient:
+  ServiceUrl:
+    settings-key: ClientAccountServiceUrl
 
 MonitoringServiceClient:
   MonitoringServiceUrl:
