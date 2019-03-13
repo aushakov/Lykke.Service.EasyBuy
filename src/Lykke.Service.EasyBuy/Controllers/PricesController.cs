@@ -29,10 +29,10 @@ namespace Lykke.Service.EasyBuy.Controllers
         }
 
         /// <inheritdoc/>
-        [HttpGet("{priceId}")]
+        [HttpGet]
         [ProducesResponseType(typeof(PriceModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.NotFound)]
-        public async Task<PriceModel> GetPriceAsync(string priceId)
+        public async Task<PriceModel> GetPriceAsync([FromQuery] string priceId)
         {
             try
             {

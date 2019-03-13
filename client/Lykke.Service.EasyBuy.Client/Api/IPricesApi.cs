@@ -17,7 +17,7 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// </summary>
         /// <param name="priceId">Price Id.</param>
         /// <returns></returns>
-        [Get("/api/prices/{priceId}")]
+        [Get("/api/prices")]
         Task<PriceModel> GetPriceAsync(string priceId);
         
         /// <summary>
@@ -25,7 +25,7 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// </summary>
         /// <param name="type">Types of prices.</param>
         /// <returns></returns>
-        [Get("/api/prices/actual")]
+        [Get("/api/prices/active")]
         Task<IReadOnlyList<PriceModel>> GetActualPricesAsync(OrderType type);
     }
 }
