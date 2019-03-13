@@ -71,7 +71,7 @@ namespace Lykke.Service.EasyBuy.Controllers
         }
 
         /// <inheritdoc />
-        [HttpPut]
+        [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyList<OrderModel>), (int) HttpStatusCode.OK)]
         public async Task<IReadOnlyList<OrderModel>> GetAllOrdersAsync(
             [FromQuery] string walletId,
