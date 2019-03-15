@@ -31,7 +31,11 @@ namespace Lykke.Service.EasyBuy.Validators
             
             RuleFor(o => o.Markup)
                 .Must(o => !o.HasValue || o.Value < 1m && o.Value > 0m)
-                .WithMessage("Allowed overlap can not be negative.");
+                .WithMessage("Markup has to be between 0 and 1 (non inclusive).");
+
+            RuleFor(o => o.Volume)
+                .GreaterThan(0m)
+                .WithMessage("Volume has to be positive number.");
 
             RuleFor(o => o.RecalculationInterval)
                 .Must((model, b) =>

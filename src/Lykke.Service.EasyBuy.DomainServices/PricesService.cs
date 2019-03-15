@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Common;
 using JetBrains.Annotations;
@@ -21,6 +23,10 @@ namespace Lykke.Service.EasyBuy.DomainServices
         private readonly IPricesRepository _pricesRepository;
         private readonly ISettingsService _settingsService;
         
+        private readonly ConcurrentDictionary<string, Price> _latestPrices;
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores;
+        private readonly object _semaphoresLock;
+        
         public PricesService(
             IAssetsServiceWithCache assetsService,
             IInstrumentsAccessService instrumentsAccessService,
@@ -33,6 +39,10 @@ namespace Lykke.Service.EasyBuy.DomainServices
             _orderBookService = orderBookService;
             _pricesRepository = pricesRepository;
             _settingsService = settingsService;
+            
+            _latestPrices = new ConcurrentDictionary<string, Price>();
+            _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+            _semaphoresLock = new object();
         }
         
         public async Task<Price> CreateAsync(string assetPair, OrderType type, decimal quotingVolume, DateTime validFrom)
@@ -138,6 +148,8 @@ namespace Lykke.Service.EasyBuy.DomainServices
             };
 
             await _pricesRepository.InsertAsync(price);
+
+            await UpdateIfLatestAsync(price);
             
             return price;
         }
@@ -151,7 +163,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
             foreach (var instrument in activeInstruments)
             {
-                var lastPrice = await _pricesRepository.GetLatestAsync(instrument.AssetPair, type);
+                var lastPrice = await GetLatestAsync(instrument.AssetPair, type);
                 
                 if(lastPrice != null)
                     prices.Add(lastPrice);
@@ -168,6 +180,85 @@ namespace Lykke.Service.EasyBuy.DomainServices
                 throw new EntityNotFoundException();
 
             return priceSnapshot;
+        }
+
+        private async Task UpdateIfLatestAsync(Price price)
+        {
+            var semaphore = ObtainSemaphore(price.AssetPair, price.Type);
+
+            await semaphore.WaitAsync();
+
+            try
+            {
+                var key = GetLastPriceKey(price.AssetPair, price.Type);
+
+                if (!_latestPrices.ContainsKey(key))
+                {
+                    _latestPrices[key] = price;
+                    return;
+                }
+
+                var latestPriceInDictionary = _latestPrices[key];
+
+                if (latestPriceInDictionary.ValidTo >= price.ValidTo)
+                    return;
+
+                _latestPrices[key] = price;
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
+
+        private async Task<Price> GetLatestAsync(string assetPair, OrderType type)
+        {
+            var semaphore = ObtainSemaphore(assetPair, type);
+
+            await semaphore.WaitAsync();
+
+            try
+            {
+                var key = GetLastPriceKey(assetPair, type);
+
+                if (_latestPrices.ContainsKey(key))
+                    return _latestPrices[key];
+                
+                var latestPriceFromRepository = await _pricesRepository.GetLatestAsync(assetPair, type);
+
+                if (latestPriceFromRepository == null)
+                    return null;
+
+                _latestPrices[key] = latestPriceFromRepository;
+
+                return latestPriceFromRepository;
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
+
+        private SemaphoreSlim ObtainSemaphore(string assetPair, OrderType type)
+        {
+            lock (_semaphoresLock)
+            {
+                var semaphoreWasPresent = _semaphores.TryGetValue(GetLastPriceKey(assetPair, type), out var semaphore);
+
+                if (semaphoreWasPresent)
+                    return semaphore;
+                
+                semaphore = new SemaphoreSlim(1, 1);
+
+                _semaphores[GetLastPriceKey(assetPair, type)] = semaphore;
+
+                return semaphore;
+            }
+        }
+
+        private static string GetLastPriceKey(string assetPair, OrderType type)
+        {
+            return $"{assetPair}_{type.ToString()}";
         }
     }
 }
