@@ -26,7 +26,7 @@ EasyBuyService:
   
   OrderBookSource:
     ConnectionString:
-      settings-key: EasyBuyService-OrderBookSourceConnectionString
+      settings-key: RawPriceRabbitMq
       types:
         - RabbitMq
     QueueSuffix:
