@@ -47,7 +47,6 @@ namespace Lykke.Service.EasyBuy.DomainServices
         
         public async Task<Order> CreateAsync(string walletId, string priceId, decimal quotingVolume)
         {
-            
             var price = await _pricesService.GetAsync(priceId);
             
             if(price == null)
@@ -109,23 +108,29 @@ namespace Lykke.Service.EasyBuy.DomainServices
             }
             catch (MeNotEnoughFundsException)
             {
-                await PersistWithStatusAsync(order, OrderStatus.Cancelled);
+                var rejectReason = "Client doesn't have enough funds.";
+                
+                await PersistWithStatusAsync(order, OrderStatus.Cancelled, rejectReason);
 
-                throw new FailedOperationException("Client doesn't have enough funds.");
+                throw new FailedOperationException(rejectReason);
             }
             catch (MeOperationException e)
             {
-                await PersistWithStatusAsync(order, OrderStatus.Cancelled);
+                var rejectReason = "ME call failed.";
+                
+                await PersistWithStatusAsync(order, OrderStatus.Cancelled, rejectReason);
 
-                _log.Warning("ME call failed.", priceId, e);
+                _log.Warning(rejectReason, priceId, e);
 
-                throw new FailedOperationException("ME call failed.");
+                throw new FailedOperationException(rejectReason);
             }
             catch (FailedOperationException e)
             {
-                await PersistWithStatusAsync(order, OrderStatus.Cancelled);
+                var rejectReason = "ME call failed.";
+                
+                await PersistWithStatusAsync(order, OrderStatus.Cancelled, rejectReason);
 
-                _log.Warning("ME call failed.", priceId, e);
+                _log.Warning(rejectReason, priceId, e);
                 
                 throw;
             }
@@ -193,9 +198,17 @@ namespace Lykke.Service.EasyBuy.DomainServices
             return _ordersRepository.GetAllAsync(walletId, assetPair, timeFrom, timeTo, limit);
         }
 
-        private Task PersistWithStatusAsync(Order order, OrderStatus status)
+        private Task PersistWithStatusAsync(Order order, OrderStatus status, string rejectReason = null)
         {
             order.Status = status;
+
+            if (status == OrderStatus.Cancelled)
+            {
+                if(string.IsNullOrWhiteSpace(rejectReason))
+                    throw new Exception("Provide reject reason when cancelling order.");
+
+                order.RejectReason = rejectReason;
+            }
             
             return _ordersRepository.UpdateAsync(order);
         }

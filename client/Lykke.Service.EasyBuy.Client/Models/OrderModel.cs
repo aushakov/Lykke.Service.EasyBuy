@@ -52,5 +52,10 @@ namespace Lykke.Service.EasyBuy.Client.Models
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public OrderStatusModel Status { set; get; }
+        
+        /// <summary>
+        /// Cancellation reason (if applicable).
+        /// </summary>
+        public string RejectReason { set; get; }
     }
 }

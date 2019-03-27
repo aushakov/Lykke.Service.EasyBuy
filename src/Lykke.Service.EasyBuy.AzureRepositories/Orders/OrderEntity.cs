@@ -37,6 +37,8 @@ namespace Lykke.Service.EasyBuy.AzureRepositories.Orders
         
         public OrderStatus Status { set; get; }
         
+        public string RejectReason { set; get; }
+        
         public DateTime CreatedTime { set; get; }
         
         public string ReserveTransferId { set; get; }
