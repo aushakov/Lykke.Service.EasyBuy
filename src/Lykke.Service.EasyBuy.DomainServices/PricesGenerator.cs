@@ -102,7 +102,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
             {
                 await _startLock.WaitAsync();
 
-                _log.Info(nameof(Start), "Stopping publishing.", assetPair);
+                _log.Info(nameof(Stop), "Stopping publishing.", assetPair);
 
                 if (!_cycleTasks.ContainsKey(assetPair) || !_tokenSources.ContainsKey(assetPair))
                     throw new FailedOperationException($"No instrument {assetPair} was found running.");
@@ -114,7 +114,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
                 _tokenSources.TryRemove(assetPair, out _);
                 _cycleTasks.TryRemove(assetPair, out _);
 
-                _log.Info(nameof(Start), "Stopped.", assetPair);
+                _log.Info(nameof(Stop), "Stopped.", assetPair);
             }
             finally
             {
@@ -202,6 +202,13 @@ namespace Lykke.Service.EasyBuy.DomainServices
         {
             try
             {
+                _log.Info(nameof(TryToCalculateNext), "Calculating next pack.", new
+                {
+                    assetPair,
+                    volume,
+                    validFrom
+                });
+                
                 return new PricesPack
                 {
                     Buy = await _pricesService.CreateAsync(assetPair, OrderType.Buy,
