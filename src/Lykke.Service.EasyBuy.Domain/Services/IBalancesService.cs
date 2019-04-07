@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lykke.Service.EasyBuy.Domain.Entities.Balances;
 
 namespace Lykke.Service.EasyBuy.Domain.Services
 {

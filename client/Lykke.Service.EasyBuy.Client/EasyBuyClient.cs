@@ -22,22 +22,22 @@ namespace Lykke.Service.EasyBuy.Client
 
         /// <inheritdoc />
         public IBalancesApi BalancesApi { get; }
-        
+
         /// <inheritdoc />
         public IInstrumentsApi InstrumentsApi { get; }
-        
+
         /// <inheritdoc />
         public IOrdersApi OrdersApi { get; }
-        
+
         /// <inheritdoc />
         public IPricesApi PricesApi { get; }
-        
+
         /// <inheritdoc />
         public ISettingsApi SettingsApi { get; }
-        
+
         /// <inheritdoc />
         public ITradesApi TradesApi { get; }
-        
+
         /// <inheritdoc />
         public IExchangesApi ExchangesApi { get; }
     }

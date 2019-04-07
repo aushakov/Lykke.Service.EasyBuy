@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Client.Models;
+using Lykke.Service.EasyBuy.Client.Models.Prices;
 using Refit;
 
 namespace Lykke.Service.EasyBuy.Client.Api
@@ -17,15 +17,14 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// </summary>
         /// <param name="priceId">Price Id.</param>
         /// <returns></returns>
-        [Get("/api/prices")]
-        Task<PriceModel> GetPriceAsync(string priceId);
-        
+        [Get("/api/prices/{priceId}")]
+        Task<PriceModel> GetByIdAsync(string priceId);
+
         /// <summary>
-        /// Used to return all actual prices for active instruments by type.
+        /// Used to return all actual prices for active instruments.
         /// </summary>
-        /// <param name="type">Types of prices.</param>
         /// <returns></returns>
-        [Get("/api/prices/active")]
-        Task<IReadOnlyList<PriceModel>> GetActualPricesAsync(OrderType type);
+        [Get("/api/prices")]
+        Task<IReadOnlyList<PriceModel>> GetAllAsync();
     }
 }

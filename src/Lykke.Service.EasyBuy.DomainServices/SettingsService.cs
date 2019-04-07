@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Domain;
+using Lykke.Service.EasyBuy.Domain.Entities.Settings;
 using Lykke.Service.EasyBuy.Domain.Repositories;
 using Lykke.Service.EasyBuy.Domain.Services;
 
@@ -12,56 +12,55 @@ namespace Lykke.Service.EasyBuy.DomainServices
     {
         private readonly string _instanceName;
         private readonly string _walletId;
+        private readonly TimeSpan _recalculationInterval;
+        private readonly ITimersSettingsRepository _timersSettingsRepository;
 
-        private DefaultSetting _defaultSettings;
+        private TimersSettings _timersSettings;
 
-        private readonly IDefaultSettingsRepository _settingsRepository;
-        
         public SettingsService(
             string instanceName,
             string walletId,
-            IDefaultSettingsRepository settingsRepository)
+            TimeSpan recalculationInterval,
+            ITimersSettingsRepository timersSettingsRepository)
         {
             _instanceName = instanceName;
             _walletId = walletId;
-            _defaultSettings = null;
-            _settingsRepository = settingsRepository;
-        }
-        
-        public Task<string> GetServiceInstanceNameAsync()
-        {
-            return Task.FromResult(_instanceName);
+            _recalculationInterval = recalculationInterval;
+            _timersSettingsRepository = timersSettingsRepository;
         }
 
-        public Task<string> GetWalletIdAsync()
-        {
-            return Task.FromResult(_walletId);
-        }
+        public string GetInstanceName()
+            => _instanceName;
 
-        public async Task<DefaultSetting> GetDefaultSettingsAsync()
+        public string GetWalletId()
+            => _walletId;
+
+        public TimeSpan GetRecalculationInterval()
+            => _recalculationInterval;
+
+        public async Task<TimersSettings> GetTimersSettingsAsync()
         {
-            if (_defaultSettings == null)
+            if (_timersSettings == null)
             {
-                var defaultSettings = await _settingsRepository.GetAsync();
+                _timersSettings = await _timersSettingsRepository.GetAsync();
 
-                _defaultSettings = new DefaultSetting
+                if (_timersSettings == null)
                 {
-                    Markup = defaultSettings?.Markup ?? 0.01m,
-                    OverlapTime = defaultSettings?.OverlapTime ?? TimeSpan.Zero,
-                    PriceLifetime = defaultSettings?.PriceLifetime ?? TimeSpan.FromSeconds(20),
-                    RecalculationInterval = defaultSettings?.RecalculationInterval ?? TimeSpan.Zero,
-                    TimerPeriod = defaultSettings?.TimerPeriod ?? TimeSpan.FromSeconds(5)
-                };
+                    _timersSettings = new TimersSettings
+                    {
+                        Orders = TimeSpan.FromSeconds(5)
+                    };
+                }
             }
 
-            return _defaultSettings;
+            return _timersSettings;
         }
 
-        public async Task UpdateDefaultSettingsAsync(DefaultSetting defaultSetting)
+        public async Task UpdateTimersSettingsAsync(TimersSettings timersSettings)
         {
-            _defaultSettings = defaultSetting;
+            await _timersSettingsRepository.InsertOrReplaceAsync(timersSettings);
 
-            await _settingsRepository.CreateOrUpdateAsync(defaultSetting);
+            _timersSettings = timersSettings;
         }
     }
 }

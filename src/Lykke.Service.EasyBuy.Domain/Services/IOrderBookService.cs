@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lykke.Service.EasyBuy.Domain.Entities.OrderBooks;
 
 namespace Lykke.Service.EasyBuy.Domain.Services
 {
@@ -9,6 +10,6 @@ namespace Lykke.Service.EasyBuy.Domain.Services
 
         IReadOnlyList<string> GetExistingExchanges();
 
-        Task HandleAsync(string exchange, OrderBook orderBook);
+        Task HandleAsync(OrderBook orderBook);
     }
 }

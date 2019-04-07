@@ -5,8 +5,8 @@ using AutoMapper;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Service.EasyBuy.Client.Api;
-using Lykke.Service.EasyBuy.Client.Models;
-using Lykke.Service.EasyBuy.Domain;
+using Lykke.Service.EasyBuy.Client.Models.Instruments;
+using Lykke.Service.EasyBuy.Domain.Entities.Instruments;
 using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -16,58 +16,58 @@ namespace Lykke.Service.EasyBuy.Controllers
     [Route("/api/[controller]")]
     public class InstrumentsController : Controller, IInstrumentsApi
     {
-        private readonly IInstrumentsService _instrumentsService;
+        private readonly IInstrumentSettingsService _instrumentSettingsService;
 
-        public InstrumentsController(
-            IInstrumentsService instrumentsService)
+        public InstrumentsController(IInstrumentSettingsService instrumentSettingsService)
         {
-            _instrumentsService = instrumentsService;
+            _instrumentSettingsService = instrumentSettingsService;
         }
 
         /// <inheritdoc/>
         /// <response code="200">A collection of instruments.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyCollection<InstrumentModel>), (int) HttpStatusCode.OK)]
-        public async Task<IReadOnlyCollection<InstrumentModel>> GetAllAsync()
+        [ProducesResponseType(typeof(IReadOnlyCollection<InstrumentSettingsModel>), (int) HttpStatusCode.OK)]
+        public async Task<IReadOnlyCollection<InstrumentSettingsModel>> GetAllAsync()
         {
-            var instruments = await _instrumentsService.GetAllAsync();
+            IReadOnlyList<InstrumentSettings> instrumentSettings = await _instrumentSettingsService.GetAllAsync();
 
-            return Mapper.Map<List<InstrumentModel>>(instruments);
+            return Mapper.Map<List<InstrumentSettingsModel>>(instrumentSettings);
         }
 
         /// <inheritdoc/>
         /// <response code="200">An instrument.</response>
         /// <response code="404">Instrument does not exist.</response>
         [HttpGet("{assetPairId}")]
-        [ProducesResponseType(typeof(InstrumentModel), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(InstrumentSettingsModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.NotFound)]
-        public async Task<InstrumentModel> GetByAssetPairIdAsync(string assetPairId)
+        public async Task<InstrumentSettingsModel> GetByAssetPairIdAsync(string assetPairId)
         {
             try
             {
-                var instrument = await _instrumentsService.GetByAssetPairIdAsync(assetPairId);
+                InstrumentSettings instrumentSettings =
+                    await _instrumentSettingsService.GetByAssetPairAsync(assetPairId);
 
-                return Mapper.Map<InstrumentModel>(instrument);
+                return Mapper.Map<InstrumentSettingsModel>(instrumentSettings);
             }
             catch (EntityNotFoundException)
             {
                 throw new ValidationApiException(HttpStatusCode.NotFound, "Instrument does not exist.");
             }
         }
-        
+
         /// <inheritdoc/>
         /// <response code="204">The instrument successfully added.</response>
         /// <response code="400">The instrument already used.</response>
         [HttpPost]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.BadRequest)]
-        public async Task AddAsync([FromBody] InstrumentModel model)
+        public async Task AddAsync([FromBody] InstrumentSettingsModel model)
         {
             try
             {
-                var instrument = Mapper.Map<Instrument>(model);
+                var instrumentSettings = Mapper.Map<InstrumentSettings>(model);
 
-                await _instrumentsService.AddAsync(instrument);
+                await _instrumentSettingsService.AddAsync(instrumentSettings);
             }
             catch (FailedOperationException exception)
             {
@@ -83,13 +83,13 @@ namespace Lykke.Service.EasyBuy.Controllers
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.BadRequest)]
-        public async Task UpdateAsync([FromBody] InstrumentModel model)
+        public async Task UpdateAsync([FromBody] InstrumentSettingsModel model)
         {
             try
             {
-                var instrument = Mapper.Map<Instrument>(model);
+                var instrumentSettings = Mapper.Map<InstrumentSettings>(model);
 
-                await _instrumentsService.UpdateAsync(instrument);
+                await _instrumentSettingsService.UpdateAsync(instrumentSettings);
             }
             catch (EntityNotFoundException)
             {
@@ -112,7 +112,7 @@ namespace Lykke.Service.EasyBuy.Controllers
         {
             try
             {
-                await _instrumentsService.DeleteAsync(assetPairId);
+                await _instrumentSettingsService.DeleteAsync(assetPairId);
             }
             catch (EntityNotFoundException)
             {
