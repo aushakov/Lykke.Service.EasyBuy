@@ -67,17 +67,17 @@ namespace Lykke.Service.EasyBuy.DomainServices
             TimeSpan recalculationInterval = _settingsService.GetRecalculationInterval();
 
             DateTime currentPriceValidTo = currentPrice?.ValidTo ?? currentDate;
-            
+
             bool currentPriceNotExpired = currentDate.Add(recalculationInterval) < currentPriceValidTo;
-            
+
             if (currentPriceNotExpired)
                 return;
 
             TimeSpan expiredDuration = (currentDate - currentPriceValidTo).Duration();
-            
+
             bool expiredInRecalculationInterval = expiredDuration <= recalculationInterval;
-            
-            if(!expiredInRecalculationInterval)
+
+            if (!expiredInRecalculationInterval)
             {
                 _log.WarningWithDetails("Price recalculation interval exceeded", new
                 {
@@ -89,11 +89,14 @@ namespace Lykke.Service.EasyBuy.DomainServices
             }
 
             DateTime validFrom = expiredInRecalculationInterval ? currentPriceValidTo : currentDate;
-            
+
             DateTime validTo = validFrom.Add(instrumentSettings.PriceLifetime);
 
             OrderBook orderBook =
                 _orderBookService.GetByAssetPairId(instrumentSettings.Exchange, instrumentSettings.AssetPair);
+
+            if (orderBook == null)
+                return;
 
             AssetPair assetPairSettings = _assetPairsRepository.TryGet(instrumentSettings.AssetPair);
 

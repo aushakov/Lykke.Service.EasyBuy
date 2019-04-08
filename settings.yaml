@@ -42,15 +42,6 @@ EasyBuyService:
         Exchange:
           settings-key: EasyBuyService-Rabbit-Publishers-Prices-Exchange
 
-SlackNotifications:
-  AzureQueue:
-    ConnectionString:
-      settings-key: SlackNotificationsConnString
-      types:
-        - AzureTableStorage
-    QueueName:
-      settings-key: SlackQueueName
-
 AssetsServiceClient:
   ServiceUrl:
     settings-key: AssetsServiceUrl
@@ -63,9 +54,14 @@ ExchangeOperationsServiceClient:
   ServiceUrl:
     settings-key: ExchangeOperationsServiceUrl
 
-ClientAccountServiceClient:
-  ServiceUrl:
-    settings-key: ClientAccountServiceUrl
+SlackNotifications:
+  AzureQueue:
+    ConnectionString:
+      settings-key: SlackNotificationsConnString
+      types:
+        - AzureTableStorage
+    QueueName:
+      settings-key: SlackQueueName
 
 MonitoringServiceClient:
   MonitoringServiceUrl:
