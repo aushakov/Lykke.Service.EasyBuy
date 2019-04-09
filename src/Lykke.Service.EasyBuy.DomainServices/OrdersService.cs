@@ -189,14 +189,9 @@ namespace Lykke.Service.EasyBuy.DomainServices
             }
         }
 
-        public async Task<Order> GetAsync(string walletId, string id)
+        public Task<Order> GetOrderByIdAsync(string orderId)
         {
-            var order = await _orderRepository.GetAsync(walletId, id);
-
-            if (order == null)
-                throw new EntityNotFoundException();
-
-            return order;
+            return _orderRepository.GetOrderByIdAsync(orderId);
         }
 
         public Task<IReadOnlyList<Order>> GetAllAsync(string walletId, string assetPair, DateTime? timeFrom,

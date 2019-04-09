@@ -48,7 +48,7 @@ namespace Lykke.Service.EasyBuy.Controllers
         }
 
         /// <inheritdoc/>
-        [HttpGet("active")]
+        [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyList<PriceModel>), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.BadRequest)]
         public async Task<IReadOnlyList<PriceModel>> GetAllAsync()

@@ -17,7 +17,7 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// </summary>
         /// <returns>A collection of instruments.</returns>
         [Get("/api/instruments")]
-        Task<IReadOnlyCollection<InstrumentSettingsModel>> GetAllAsync();
+        Task<IReadOnlyList<InstrumentSettingsModel>> GetAllAsync();
 
         /// <summary>
         /// Returns an instrument by asset pair id.

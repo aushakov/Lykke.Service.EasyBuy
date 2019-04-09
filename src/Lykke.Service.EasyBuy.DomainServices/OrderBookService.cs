@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Domain;
 using Lykke.Service.EasyBuy.Domain.Entities.OrderBooks;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Lykke.Service.EasyBuy.DomainServices.Cache;
@@ -21,7 +20,11 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
         public IReadOnlyList<string> GetExistingExchanges()
         {
-            return _cache.GetAll().Select(o => o.Exchange).ToList();
+            return _cache.GetAll()
+                .Select(o => o.Exchange)
+                .Distinct()
+                .OrderBy(o => o)
+                .ToList();
         }
 
         public Task HandleAsync(OrderBook orderBook)

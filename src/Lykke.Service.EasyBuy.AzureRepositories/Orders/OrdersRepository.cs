@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,10 +27,12 @@ namespace Lykke.Service.EasyBuy.AzureRepositories.Orders
             _indices = indices;
         }
 
-        public async Task<Order> GetAsync(string walletId, string orderId)
+        public async Task<Order> GetOrderByIdAsync(string orderId)
         {
-            OrderEntity entity = await _storage.GetDataAsync(GetPartitionKey(walletId), GetRowKey(orderId));
+            IEnumerable<OrderEntity> entities = await _storage.GetDataRowKeysOnlyAsync(new[] {GetRowKey(orderId)});
 
+            OrderEntity entity = entities?.FirstOrDefault();
+            
             return Mapper.Map<Order>(entity);
         }
 

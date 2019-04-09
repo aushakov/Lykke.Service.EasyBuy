@@ -11,7 +11,7 @@ namespace Lykke.Service.EasyBuy.Domain.Services
 
         Task ProcessPendingAsync();
 
-        Task<Order> GetAsync(string walletId, string id);
+        Task<Order> GetOrderByIdAsync(string orderId);
         
         Task<IReadOnlyList<Order>> GetAllAsync(string walletId, string assetPair, DateTime? timeFrom, DateTime? timeTo, int limit);
     }

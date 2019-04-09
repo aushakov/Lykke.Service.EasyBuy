@@ -22,11 +22,10 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// <summary>
         /// Used to fetch existing order.
         /// </summary>
-        /// <param name="walletId">Id of the client's wallet.</param>
-        /// <param name="id">Id of the order.</param>
+        /// <param name="orderId">Id of the order.</param>
         /// <returns>Order details.</returns>
-        [Get("/api/orders/{walletId}/{id}")]
-        Task<OrderModel> GetOrderAsync(string walletId, string id);
+        [Get("/api/orders/{orderId}")]
+        Task<OrderModel> GetOrderByIdAsync(string orderId);
 
         /// <summary>
         /// Gets all orders with filters. Filter isn't applied if equal tu null.

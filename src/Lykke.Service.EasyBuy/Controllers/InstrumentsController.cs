@@ -26,8 +26,8 @@ namespace Lykke.Service.EasyBuy.Controllers
         /// <inheritdoc/>
         /// <response code="200">A collection of instruments.</response>
         [HttpGet]
-        [ProducesResponseType(typeof(IReadOnlyCollection<InstrumentSettingsModel>), (int) HttpStatusCode.OK)]
-        public async Task<IReadOnlyCollection<InstrumentSettingsModel>> GetAllAsync()
+        [ProducesResponseType(typeof(IReadOnlyList<InstrumentSettingsModel>), (int) HttpStatusCode.OK)]
+        public async Task<IReadOnlyList<InstrumentSettingsModel>> GetAllAsync()
         {
             IReadOnlyList<InstrumentSettings> instrumentSettings = await _instrumentSettingsService.GetAllAsync();
 

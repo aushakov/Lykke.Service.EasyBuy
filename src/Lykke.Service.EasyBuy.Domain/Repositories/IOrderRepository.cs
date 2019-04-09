@@ -7,7 +7,7 @@ namespace Lykke.Service.EasyBuy.Domain.Repositories
 {
     public interface IOrderRepository
     {
-        Task<Order> GetAsync(string walletId, string orderId);
+        Task<Order> GetOrderByIdAsync(string orderId);
 
         Task<IReadOnlyList<Order>> GetAllAsync(string walletId, string assetPair, DateTime? timeFrom, DateTime? timeTo,
             int limit);

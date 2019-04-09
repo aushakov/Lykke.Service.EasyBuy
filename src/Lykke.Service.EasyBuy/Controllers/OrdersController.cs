@@ -9,6 +9,7 @@ using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.Log;
 using Lykke.Service.EasyBuy.Client.Api;
 using Lykke.Service.EasyBuy.Client.Models.Orders;
+using Lykke.Service.EasyBuy.Domain.Entities.Orders;
 using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -55,19 +56,17 @@ namespace Lykke.Service.EasyBuy.Controllers
         }
 
         /// <inheritdoc />
-        [HttpGet("{walletId}/{id}")]
+        [HttpGet("{orderId}")]
         [ProducesResponseType(typeof(OrderModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.NotFound)]
-        public async Task<OrderModel> GetOrderAsync(string walletId, string id)
+        public async Task<OrderModel> GetOrderByIdAsync(string orderId)
         {
-            try
-            {
-                return Mapper.Map<OrderModel>(await _ordersService.GetAsync(walletId, id));
-            }
-            catch (EntityNotFoundException)
-            {
+            Order order = await _ordersService.GetOrderByIdAsync(orderId);
+                
+            if (order == null)
                 throw new ValidationApiException(HttpStatusCode.NotFound, "Order does not exist.");
-            }
+                
+            return Mapper.Map<OrderModel>(order);
         }
 
         /// <inheritdoc />
