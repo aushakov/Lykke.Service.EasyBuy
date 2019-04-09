@@ -6,7 +6,7 @@ using Common.Log;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.Log;
 using Lykke.Service.EasyBuy.Client.Api;
-using Lykke.Service.EasyBuy.Client.Models;
+using Lykke.Service.EasyBuy.Client.Models.Balances;
 using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +30,7 @@ namespace Lykke.Service.EasyBuy.Controllers
         /// <inheritdoc/>
         /// <response code="200">A collection of instruments.</response>
         [HttpGet]
+        [ResponseCache(Duration = 5)]
         [ProducesResponseType(typeof(IReadOnlyCollection<BalanceModel>), (int) HttpStatusCode.OK)]
         public async Task<IReadOnlyList<BalanceModel>> GetAsync()
         {
@@ -39,8 +40,6 @@ namespace Lykke.Service.EasyBuy.Controllers
             }
             catch (FailedOperationException exception)
             {
-                _log.Error(exception);
-                
                 throw new ValidationApiException(HttpStatusCode.BadRequest, exception.Message);
             }
         }

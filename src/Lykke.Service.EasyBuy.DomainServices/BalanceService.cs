@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Common.Log;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
+using Lykke.Service.Balances.AutorestClient.Models;
 using Lykke.Service.Balances.Client;
-using Lykke.Service.EasyBuy.Domain;
+using Lykke.Service.EasyBuy.Domain.Entities.Balances;
 using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Services;
+using Lykke.Service.EasyBuy.DomainServices.Extensions;
 
 namespace Lykke.Service.EasyBuy.DomainServices
 {
@@ -33,18 +35,22 @@ namespace Lykke.Service.EasyBuy.DomainServices
         {
             try
             {
-                var balance = await _balancesClient.GetClientBalances(await _settingsService.GetWalletIdAsync());
+                string walletId = _settingsService.GetWalletId();
+                
+                IEnumerable<ClientBalanceResponseModel> balance = await _balancesClient.GetClientBalances(walletId);
 
                 return balance.Select(x => new Balance
                 {
                     AssetId = x.AssetId,
                     Available = x.Balance,
                     Reserved = x.Reserved
-                }).ToArray();
+                }).ToList();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                throw new FailedOperationException("Failed to retrieve balances.", e);
+                _log.WarningWithDetails("An error occurred while retrieving balances", exception);
+
+                throw new FailedOperationException("Failed to retrieve balances.", exception);
             }
         }
     }

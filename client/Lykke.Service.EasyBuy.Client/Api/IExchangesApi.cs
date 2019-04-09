@@ -15,7 +15,7 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// Provides ability to request available exchanges.
         /// </summary>
         /// <returns>A list of available exchanges.</returns>
-        [Get("/api/exchanges/available")]
-        Task<IReadOnlyList<string>> GetAvailableAsync();
+        [Get("/api/exchanges")]
+        Task<IReadOnlyList<string>> GetAsync();
     }
 }

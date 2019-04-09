@@ -4,8 +4,9 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Lykke.Service.EasyBuy.Client.Api;
-using Lykke.Service.EasyBuy.Client.Models;
-using Lykke.Service.EasyBuy.Domain.Repositories;
+using Lykke.Service.EasyBuy.Client.Models.Trades;
+using Lykke.Service.EasyBuy.Domain.Entities.Trades;
+using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lykke.Service.EasyBuy.Controllers
@@ -13,20 +14,22 @@ namespace Lykke.Service.EasyBuy.Controllers
     [Route("/api/[controller]")]
     public class TradesController : Controller, ITradesApi
     {
-        private readonly ITradesRepository _tradesRepository;
-        
-        public TradesController(
-            ITradesRepository tradesRepository)
+        private readonly ITradeService _tradeService;
+
+        public TradesController(ITradeService tradeService)
         {
-            _tradesRepository = tradesRepository;
+            _tradeService = tradeService;
         }
-        
+
         /// <inheritdoc />
         [HttpGet]
         [ProducesResponseType(typeof(IReadOnlyCollection<TradeModel>), (int) HttpStatusCode.OK)]
-        public async Task<IReadOnlyList<TradeModel>> GetTradesAsync([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        public async Task<IReadOnlyList<TradeModel>> GetTradesAsync([FromQuery] DateTime fromDate,
+            [FromQuery] DateTime toDate)
         {
-            return Mapper.Map<IReadOnlyList<TradeModel>>(await _tradesRepository.GetAsync(fromDate, toDate));
+            IReadOnlyList<Trade> trades = await _tradeService.GetAsync(fromDate, toDate);
+
+            return Mapper.Map<IReadOnlyList<TradeModel>>(trades);
         }
     }
 }

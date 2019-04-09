@@ -1,7 +1,17 @@
 using AutoMapper;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Client.Models;
-using Lykke.Service.EasyBuy.Domain;
+using Lykke.Service.EasyBuy.Client.Models.Balances;
+using Lykke.Service.EasyBuy.Client.Models.Instruments;
+using Lykke.Service.EasyBuy.Client.Models.Orders;
+using Lykke.Service.EasyBuy.Client.Models.Prices;
+using Lykke.Service.EasyBuy.Client.Models.Settings;
+using Lykke.Service.EasyBuy.Client.Models.Trades;
+using Lykke.Service.EasyBuy.Domain.Entities.Balances;
+using Lykke.Service.EasyBuy.Domain.Entities.Instruments;
+using Lykke.Service.EasyBuy.Domain.Entities.Orders;
+using Lykke.Service.EasyBuy.Domain.Entities.Prices;
+using Lykke.Service.EasyBuy.Domain.Entities.Settings;
+using Lykke.Service.EasyBuy.Domain.Entities.Trades;
 
 namespace Lykke.Service.EasyBuy
 {
@@ -10,19 +20,24 @@ namespace Lykke.Service.EasyBuy
     {
         public AutoMapperProfile()
         {
-            CreateMap<Instrument, InstrumentModel>(MemberList.Source);
-            CreateMap<InstrumentModel, Instrument>(MemberList.Destination);
-            
-            CreateMap<Order, OrderModel>(MemberList.Destination)
-                .ForMember(o => o.Volume, opt => opt.MapFrom(x => x.BaseVolume));
-            
-            CreateMap<Price, PriceModel>(MemberList.Destination);
+            CreateMap<Balance, BalanceModel>(MemberList.Source);
 
-            CreateMap<Common.ExchangeAdapter.Contracts.OrderBookItem, OrderBookLimitOrder>(MemberList.Destination);
-            CreateMap<Lykke.Common.ExchangeAdapter.Contracts.OrderBook, OrderBook>(MemberList.Destination)
-                .ForMember(o => o.AssetPair, opt => opt.MapFrom(x => x.Asset))
-                .ForMember(o => o.SellLimitOrders, opt => opt.MapFrom(x => x.Asks))
-                .ForMember(o => o.BuyLimitOrders, opt => opt.MapFrom(x => x.Bids));
+            CreateMap<InstrumentSettings, InstrumentSettingsModel>(MemberList.Source);
+            CreateMap<InstrumentSettingsModel, InstrumentSettings>(MemberList.Destination);
+
+            CreateMap<Order, OrderModel>(MemberList.Source)
+                .ForMember(o => o.Volume, opt => opt.MapFrom(x => x.BaseVolume))
+                .ForSourceMember(src => src.QuotingVolume, opt => opt.DoNotValidate())
+                .ForSourceMember(src => src.ReserveTransferId, opt => opt.DoNotValidate())
+                .ForSourceMember(src => src.SettlementTransferId, opt => opt.DoNotValidate());
+
+            CreateMap<Price, PriceModel>(MemberList.Source)
+                .ForSourceMember(src => src.AllowedOverlap, opt => opt.DoNotValidate());
+
+            CreateMap<TimersSettings, TimersSettingsModel>(MemberList.Source);
+            CreateMap<TimersSettingsModel, TimersSettings>(MemberList.Destination);
+
+            CreateMap<Trade, TradeModel>(MemberList.Source);
         }
     }
 }

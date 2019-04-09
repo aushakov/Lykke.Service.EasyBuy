@@ -1,9 +1,10 @@
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.EasyBuy.Client.Api;
-using Lykke.Service.EasyBuy.Client.Models;
-using Lykke.Service.EasyBuy.Domain;
+using Lykke.Service.EasyBuy.Client.Models.Settings;
+using Lykke.Service.EasyBuy.Domain.Entities.Settings;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,32 +19,39 @@ namespace Lykke.Service.EasyBuy.Controllers
         {
             _settingsService = settingsService;
         }
-        
+
         /// <inheritdoc/>
         [HttpGet("account")]
         [ProducesResponseType(typeof(AccountSettingsModel), (int) HttpStatusCode.OK)]
-        public async Task<AccountSettingsModel> GetAccountSettingsAsync()
+        public Task<AccountSettingsModel> GetAccountSettingsAsync()
         {
-            return new AccountSettingsModel
+            return Task.FromResult(new AccountSettingsModel
             {
-                WalletId = await _settingsService.GetWalletIdAsync()
-            };
+                WalletId = _settingsService.GetWalletId()
+            });
         }
 
         /// <inheritdoc/>
-        [HttpGet("default")]
-        [ProducesResponseType(typeof(DefaultSettingsModel), (int) HttpStatusCode.OK)]
-        public async Task<DefaultSettingsModel> GetDefaultSettingsAsync()
+        /// <response code="200">The model that represents timers settings.</response>
+        [HttpGet("timers")]
+        [ProducesResponseType(typeof(TimersSettingsModel), (int) HttpStatusCode.OK)]
+        public async Task<TimersSettingsModel> GetTimersSettingsAsync()
         {
-            return Mapper.Map<DefaultSettingsModel>(await _settingsService.GetDefaultSettingsAsync());
+            TimersSettings timersSettings = await _settingsService.GetTimersSettingsAsync();
+
+            return Mapper.Map<TimersSettingsModel>(timersSettings);
         }
 
         /// <inheritdoc/>
-        [HttpPut("default")]
+        /// <response code="204">The timers settings successfully updated.</response>
+        [HttpPut("timers")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        public async Task UpdateDefaultPriceSettingsAsync([FromBody] DefaultSettingsModel defaultSettings)
+        [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.NotFound)]
+        public async Task UpdateTimersSettingsAsync([FromBody] TimersSettingsModel model)
         {
-            await _settingsService.UpdateDefaultSettingsAsync(Mapper.Map<DefaultSetting>(defaultSettings));
+            var timersSettings = Mapper.Map<TimersSettings>(model);
+
+            await _settingsService.UpdateTimersSettingsAsync(timersSettings);
         }
     }
 }

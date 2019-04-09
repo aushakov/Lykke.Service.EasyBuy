@@ -1,33 +1,33 @@
-using System;
-using System.Globalization;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using AzureStorage;
-using Lykke.Service.EasyBuy.Domain;
+using Lykke.Service.EasyBuy.Domain.Entities.Prices;
 using Lykke.Service.EasyBuy.Domain.Repositories;
 
 namespace Lykke.Service.EasyBuy.AzureRepositories.Prices
 {
-    public class PricesRepository : IPricesRepository
+    public class PriceRepository : IPriceRepository
     {
         private readonly INoSQLTableStorage<PriceEntity> _storage;
 
-        public PricesRepository(INoSQLTableStorage<PriceEntity> storage)
+        public PriceRepository(INoSQLTableStorage<PriceEntity> storage)
         {
             _storage = storage;
         }
-        
-        public async Task<Price> GetAsync(string id)
+
+        public async Task<Price> GetByIdAsync(string priceId)
         {
-            return Mapper.Map<Price>(await _storage.GetDataAsync(GetPartitionKey(), GetRowKey(id)));
+            PriceEntity entity = await _storage.GetDataAsync(GetPartitionKey(), GetRowKey(priceId));
+
+            return Mapper.Map<Price>(entity);
         }
 
-        public async Task<Price> GetLatestAsync(string assetPair, OrderType type)
+        public async Task<IReadOnlyList<Price>> GetLatestAsync()
         {
-            return Mapper.Map<Price>(
-                (await _storage.GetTopRecordsAsync(
-                    GetLatestPartitionKey(assetPair, type), 1)).SingleOrDefault());
+            IEnumerable<PriceEntity> entities = await _storage.GetDataAsync(GetLatestPartitionKey());
+
+            return Mapper.Map<List<Price>>(entities);
         }
 
         public async Task InsertAsync(Price price)
@@ -36,31 +36,25 @@ namespace Lykke.Service.EasyBuy.AzureRepositories.Prices
 
             Mapper.Map(price, entity);
 
-            await _storage.InsertThrowConflictAsync(entity);
-            
-            var latestEntity = new PriceEntity(
-                GetLatestPartitionKey(price.AssetPair, price.Type),
-                GetLatestRowKey(price.ValidFrom));
-            
+            await _storage.InsertAsync(entity);
+
+            var latestEntity = new PriceEntity(GetLatestPartitionKey(), GetLatestRowKey(price.AssetPair));
+
             Mapper.Map(price, latestEntity);
 
-            await _storage.InsertThrowConflictAsync(latestEntity);
+            await _storage.InsertOrReplaceAsync(latestEntity);
         }
-        
+
         private static string GetPartitionKey()
             => "Price";
 
         private static string GetRowKey(string id)
             => id;
 
-        private static string GetLatestPartitionKey(string assetPair, OrderType type)
-            => $"{assetPair}_{type.ToString()}";
-        
-        private static string GetLatestRowKey(DateTime validFrom)
-            => DateTime
-                .MaxValue
-                .Subtract(validFrom)
-                .TotalMilliseconds
-                .ToString(CultureInfo.InvariantCulture);
+        private static string GetLatestPartitionKey()
+            => "LatestPrice";
+
+        private static string GetLatestRowKey(string assetPair)
+            => assetPair;
     }
 }

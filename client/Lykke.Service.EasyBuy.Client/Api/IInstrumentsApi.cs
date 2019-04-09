@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Client.Models;
+using Lykke.Service.EasyBuy.Client.Models.Instruments;
 using Refit;
 
 namespace Lykke.Service.EasyBuy.Client.Api
@@ -17,7 +17,7 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// </summary>
         /// <returns>A collection of instruments.</returns>
         [Get("/api/instruments")]
-        Task<IReadOnlyCollection<InstrumentModel>> GetAllAsync();
+        Task<IReadOnlyCollection<InstrumentSettingsModel>> GetAllAsync();
 
         /// <summary>
         /// Returns an instrument by asset pair id.
@@ -25,21 +25,21 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// <param name="assetPairId">The asses pair id.</param>
         /// <returns>An instrument.</returns>
         [Get("/api/instruments/{assetPairId}")]
-        Task<InstrumentModel> GetByAssetPairIdAsync(string assetPairId);
+        Task<InstrumentSettingsModel> GetByAssetPairIdAsync(string assetPairId);
 
         /// <summary>
         /// Adds new instrument settings (without levels).
         /// </summary>
         /// <param name="model">The model that describes instrument.</param>
         [Post("/api/instruments")]
-        Task AddAsync([Body] InstrumentModel model);
+        Task AddAsync([Body] InstrumentSettingsModel model);
 
         /// <summary>
         /// Updates instrument settings (without levels).
         /// </summary>
         /// <param name="model">The model that describes instrument.</param>
         [Put("/api/instruments")]
-        Task UpdateAsync([Body] InstrumentModel model);
+        Task UpdateAsync([Body] InstrumentSettingsModel model);
 
         /// <summary>
         /// Deletes the instrument settings by asset pair id.

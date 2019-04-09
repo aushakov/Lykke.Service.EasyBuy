@@ -8,7 +8,7 @@ using Lykke.Common.Api.Contract.Responses;
 using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Common.Log;
 using Lykke.Service.EasyBuy.Client.Api;
-using Lykke.Service.EasyBuy.Client.Models;
+using Lykke.Service.EasyBuy.Client.Models.Orders;
 using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -81,9 +81,11 @@ namespace Lykke.Service.EasyBuy.Controllers
             [FromQuery] int limit)
         {
             if (limit <= 0)
-                throw new ValidationApiException(HttpStatusCode.BadRequest, $"{nameof(limit)} should be positive integer.");
-            
-            return Mapper.Map<IReadOnlyList<OrderModel>>(await _ordersService.GetAllAsync(walletId, assetPair, timeFrom, timeTo, limit));
+                throw new ValidationApiException(HttpStatusCode.BadRequest,
+                    $"{nameof(limit)} should be positive integer.");
+
+            return Mapper.Map<IReadOnlyList<OrderModel>>(
+                await _ordersService.GetAllAsync(walletId, assetPair, timeFrom, timeTo, limit));
         }
     }
 }

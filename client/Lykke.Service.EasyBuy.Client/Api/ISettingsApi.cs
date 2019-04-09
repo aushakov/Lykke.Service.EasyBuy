@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Client.Models;
+using Lykke.Service.EasyBuy.Client.Models.Settings;
 using Refit;
 
 namespace Lykke.Service.EasyBuy.Client.Api
@@ -15,21 +15,21 @@ namespace Lykke.Service.EasyBuy.Client.Api
         /// Returns account settings.
         /// </summary>
         /// <returns>Account settings.</returns>
-        [Get("/api/settings/account")]
+        [Get("/api/Settings/account")]
         Task<AccountSettingsModel> GetAccountSettingsAsync();
 
         /// <summary>
-        /// Returns default price settings.
+        /// Returns the timers settings.
         /// </summary>
-        /// <returns>Default price settings.</returns>
-        [Get("/api/settings/default")]
-        Task<DefaultSettingsModel> GetDefaultSettingsAsync();
+        /// <returns>The model that represents timers settings.</returns>
+        [Get("/api/Settings/timers")]
+        Task<TimersSettingsModel> GetTimersSettingsAsync();
 
         /// <summary>
-        /// Used to update default settings.
+        /// Updates the timers settings.
         /// </summary>
-        /// <param name="defaultSettings">New default settings.</param>
-        [Put("/api/settings/default")]
-        Task UpdateDefaultPriceSettingsAsync(DefaultSettingsModel defaultSettings);
+        /// <param name="model">The model that represents timers settings.</param>
+        [Put("/api/Settings/timers")]
+        Task UpdateTimersSettingsAsync([Body] TimersSettingsModel model);
     }
 }
