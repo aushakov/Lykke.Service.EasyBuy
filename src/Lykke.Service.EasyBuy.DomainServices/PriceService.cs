@@ -131,7 +131,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
         {
             IReadOnlyList<Price> prices = await _priceRepository.GetLatestAsync();
 
-            return prices.Where(o => o.ValidTo < DateTime.UtcNow).ToList();
+            return prices.Where(o => o.ValidTo > DateTime.UtcNow).ToList();
         }
 
         public async Task InitializeAsync()

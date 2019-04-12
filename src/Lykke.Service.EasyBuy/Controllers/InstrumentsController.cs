@@ -69,9 +69,9 @@ namespace Lykke.Service.EasyBuy.Controllers
 
                 await _instrumentSettingsService.AddAsync(instrumentSettings);
             }
-            catch (FailedOperationException exception)
+            catch (EntityAlreadyExistsException)
             {
-                throw new ValidationApiException(HttpStatusCode.BadRequest, exception.Message);
+                throw new ValidationApiException(HttpStatusCode.BadRequest, "The instrument already exists");
             }
         }
 
