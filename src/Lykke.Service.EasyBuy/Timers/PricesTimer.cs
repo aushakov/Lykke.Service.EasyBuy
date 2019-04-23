@@ -13,28 +13,28 @@ namespace Lykke.Service.EasyBuy.Timers
     {
         private readonly IPriceService _priceService;
         private readonly ISettingsService _settingsService;
-        private readonly IInstrumentSettingsService _instrumentSettingsService;
+        private readonly IInstrumentService _instrumentService;
 
         public PricesTimer(
             IPriceService priceService,
             ISettingsService settingsService,
-            IInstrumentSettingsService instrumentSettingsService,
+            IInstrumentService instrumentService,
             ILogFactory logFactory)
         {
             _priceService = priceService;
             _settingsService = settingsService;
-            _instrumentSettingsService = instrumentSettingsService;
+            _instrumentService = instrumentService;
 
             Log = logFactory.CreateLog(this);
         }
 
         protected override async Task OnExecuteAsync(CancellationToken cancellation)
         {
-            IReadOnlyList<InstrumentSettings> instrumentsSettings = await _instrumentSettingsService.GetActiveAsync();
+            IReadOnlyList<Instrument> instruments = await _instrumentService.GetActiveAsync();
 
             DateTime currentDate = DateTime.UtcNow;
 
-            IEnumerable<Task> tasks = instrumentsSettings
+            IEnumerable<Task> tasks = instruments
                 .Select(o => Task
                     .Run(async () => { await _priceService.EnsureAsync(o.AssetPair, currentDate); }, cancellation)
                     .ContinueWith(task =>

@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
-using Common.Log;
 using Lykke.Common.ApiLibrary.Exceptions;
-using Lykke.Common.Log;
 using Lykke.Service.EasyBuy.Client.Api;
 using Lykke.Service.EasyBuy.Client.Models.Balances;
+using Lykke.Service.EasyBuy.Domain.Entities.Balances;
 using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +16,12 @@ namespace Lykke.Service.EasyBuy.Controllers
     public class BalancesController : Controller, IBalancesApi
     {
         private readonly IBalancesService _balancesService;
-        private readonly ILog _log;
-        
-        public BalancesController(
-            IBalancesService balancesService,
-            ILogFactory logFactory)
+
+        public BalancesController(IBalancesService balancesService)
         {
             _balancesService = balancesService;
-            _log = logFactory.CreateLog(this);
         }
-        
+
         /// <inheritdoc/>
         /// <response code="200">A collection of instruments.</response>
         [HttpGet]
@@ -36,7 +31,9 @@ namespace Lykke.Service.EasyBuy.Controllers
         {
             try
             {
-                return Mapper.Map<IReadOnlyList<BalanceModel>>(await _balancesService.GetAsync());
+                IReadOnlyList<Balance> balances = await _balancesService.GetAllAsync();
+
+                return Mapper.Map<List<BalanceModel>>(balances);
             }
             catch (FailedOperationException exception)
             {

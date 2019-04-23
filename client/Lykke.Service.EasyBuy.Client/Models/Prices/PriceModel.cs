@@ -1,70 +1,67 @@
 using System;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Lykke.Service.EasyBuy.Client.Models.Prices
 {
     /// <summary>
-    /// Represents calculated price with finite lifetime.
+    /// Represents a price details.
     /// </summary>
     [PublicAPI]
     public class PriceModel
     {
         /// <summary>
-        /// Price's unique identifier.
+        /// The unique identifier of price.
         /// </summary>
-        public string Id { set; get; }
+        public string Id { get; set; }
 
         /// <summary>
-        /// Asset pair for which the price is calculated.
-        /// </summary>
-        public string AssetPair { set; get; }
+        /// The name of asset pair.
+        /// </summary> 
+        public string AssetPair { get; set; }
 
         /// <summary>
-        /// Direction in which client wishes to perform an operation.
+        /// The value of price.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public OrderType Type { set; get; }
+        public decimal Value { get; set; }
 
         /// <summary>
-        /// Possible base volume of the operation.
+        /// The maximum allowed base volume.
         /// </summary>
-        public decimal BaseVolume { set; get; }
+        public decimal BaseVolume { get; set; }
 
         /// <summary>
-        /// Desired quoting volume of the operation.
+        /// The maximum allowed quote volume.
         /// </summary>
-        public decimal QuotingVolume { set; get; }
+        public decimal QuoteVolume { get; set; }
 
         /// <summary>
-        /// Markup that was applied to the price.
+        /// The date since the price valid.
         /// </summary>
-        public decimal Markup { set; get; }
+        public DateTime ValidFrom { get; set; }
 
         /// <summary>
-        /// Total calculated price.
+        /// The date until the price is valid.
         /// </summary>
-        public decimal Value { set; get; }
+        public DateTime ValidTo { get; set; }
 
         /// <summary>
-        /// Calculated price.
+        /// The name of exchange that used as a price source.
         /// </summary>
-        public decimal OriginalPrice { set; get; }
+        public string Exchange { get; set; }
 
         /// <summary>
-        /// Exchange according to which the price was calculated.
+        /// The original price value
         /// </summary>
-        public string Exchange { set; get; }
+        public decimal OriginalValue { get; set; }
 
         /// <summary>
-        /// When the price becomes valid.
+        /// The markup that applied to the original price.
         /// </summary>
-        public DateTime ValidFrom { set; get; }
+        public decimal Markup { get; set; }
 
         /// <summary>
-        /// When the price stops being valid.
+        /// The date of price creation. 
         /// </summary>
-        public DateTime ValidTo { set; get; }
+        public DateTime CreatedDate { get; set; }
     }
 }

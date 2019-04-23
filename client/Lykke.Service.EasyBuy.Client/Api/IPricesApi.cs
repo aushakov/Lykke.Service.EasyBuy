@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Lykke.Common.ApiLibrary.Exceptions;
 using Lykke.Service.EasyBuy.Client.Models.Prices;
 using Refit;
 
@@ -13,17 +14,18 @@ namespace Lykke.Service.EasyBuy.Client.Api
     public interface IPricesApi
     {
         /// <summary>
-        /// Used to return calculated price by client and price ids.
+        /// Returns a price by identifier.
         /// </summary>
-        /// <param name="priceId">Price Id.</param>
-        /// <returns></returns>
+        /// <param name="priceId">The identifier of price.</param>
+        /// <returns>The price.</returns>
+        /// <exception cref="ClientApiException">If price does not exist.</exception>
         [Get("/api/prices/{priceId}")]
         Task<PriceModel> GetByIdAsync(string priceId);
 
         /// <summary>
-        /// Used to return all actual prices for active instruments.
+        /// Returns a collection of active prices.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A collection of prices.</returns>
         [Get("/api/prices")]
         Task<IReadOnlyList<PriceModel>> GetAllAsync();
     }

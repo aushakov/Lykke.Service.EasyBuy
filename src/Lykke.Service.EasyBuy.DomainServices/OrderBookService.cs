@@ -36,7 +36,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
             return Task.CompletedTask;
         }
 
-        public OrderBook GetByAssetPairId(string exchange, string assetPair)
+        public OrderBook GetByAssetPair(string exchange, string assetPair)
         {
             return _cache.Get(GetKey(exchange, assetPair));
         }

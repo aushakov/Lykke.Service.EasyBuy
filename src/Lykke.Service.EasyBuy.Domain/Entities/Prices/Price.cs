@@ -7,48 +7,82 @@ using Lykke.Service.EasyBuy.Domain.Exceptions;
 
 namespace Lykke.Service.EasyBuy.Domain.Entities.Prices
 {
+    /// <summary>
+    /// Represents a price details.
+    /// </summary>
     public class Price
     {
-        public string Id { set; get; }
+        /// <summary>
+        /// The unique identifier of price.
+        /// </summary>
+        public string Id { get; set; }
 
-        public string AssetPair { set; get; }
+        /// <summary>
+        /// The name of asset pair.
+        /// </summary> 
+        public string AssetPair { get; set; }
 
-        public OrderType Type { set; get; }
+        /// <summary>
+        /// The value of price.
+        /// </summary>
+        public decimal Value { get; set; }
 
-        public decimal Value { set; get; }
+        /// <summary>
+        /// The maximum allowed base volume.
+        /// </summary>
+        public decimal BaseVolume { get; set; }
 
-        public decimal BaseVolume { set; get; }
+        /// <summary>
+        /// The maximum allowed quote volume.
+        /// </summary>
+        public decimal QuoteVolume { get; set; }
 
-        public decimal QuotingVolume { set; get; }
+        /// <summary>
+        /// The date since the price valid.
+        /// </summary>
+        public DateTime ValidFrom { get; set; }
 
-        public decimal Markup { set; get; }
+        /// <summary>
+        /// The date until the price is valid.
+        /// </summary>
+        public DateTime ValidTo { get; set; }
 
-        public decimal OriginalPrice { set; get; }
+        /// <summary>
+        /// The name of exchange that used as a price source.
+        /// </summary>
+        public string Exchange { get; set; }
 
-        public string Exchange { set; get; }
+        /// <summary>
+        /// The original price value
+        /// </summary>
+        public decimal OriginalValue { get; set; }
 
-        public DateTime ValidFrom { set; get; }
+        /// <summary>
+        /// The markup that applied to the original price.
+        /// </summary>
+        public decimal Markup { get; set; }
 
-        public DateTime ValidTo { set; get; }
-
-        public TimeSpan AllowedOverlap { set; get; }
+        /// <summary>
+        /// The date of price creation. 
+        /// </summary>
+        public DateTime CreatedDate { get; set; }
 
         public static Price Calculate(OrderBook orderBook, decimal quoteVolume, decimal markup, DateTime validFrom,
-            DateTime validTo, TimeSpan overlapTime, int priceAccuracy, int volumeAccuracy)
+            DateTime validTo, int priceAccuracy, int volumeAccuracy)
         {
             if (orderBook == null)
                 throw new ArgumentNullException(nameof(orderBook));
 
             if (quoteVolume <= 0)
-                throw new FailedOperationException("Quoting volume required");
+                throw new FailedOperationException("Quoting volume required.");
 
             if (markup < 0 || 1 < markup)
-                throw new FailedOperationException("Invalid markup");
+                throw new FailedOperationException("Invalid markup.");
 
             IReadOnlyList<OrderBookLevel> sellLevels = orderBook.SellLevels;
 
             if (sellLevels == null || sellLevels.Count == 0)
-                throw new FailedOperationException("Empty order book");
+                throw new FailedOperationException("Empty order book.");
 
             decimal cumulativeVolume = 0;
             decimal oppositeVolume = 0;
@@ -63,7 +97,7 @@ namespace Lykke.Service.EasyBuy.Domain.Entities.Prices
             }
 
             if (oppositeVolume < quoteVolume)
-                throw new FailedOperationException("No liquidity");
+                throw new FailedOperationException("No liquidity.");
 
             decimal originalPrice = (oppositeVolume / cumulativeVolume)
                 .TruncateDecimalPlaces(priceAccuracy, true);
@@ -77,16 +111,15 @@ namespace Lykke.Service.EasyBuy.Domain.Entities.Prices
             {
                 Id = Guid.NewGuid().ToString(),
                 AssetPair = orderBook.AssetPair,
-                Type = OrderType.Sell,
                 Value = price,
                 BaseVolume = volume,
-                QuotingVolume = quoteVolume,
-                Markup = markup,
-                OriginalPrice = originalPrice,
-                Exchange = orderBook.Exchange,
+                QuoteVolume = quoteVolume,
                 ValidFrom = validFrom,
                 ValidTo = validTo,
-                AllowedOverlap = overlapTime
+                Exchange = orderBook.Exchange,
+                OriginalValue = originalPrice,
+                Markup = markup,
+                CreatedDate = DateTime.UtcNow
             };
         }
     }

@@ -10,14 +10,14 @@ namespace Lykke.Service.EasyBuy.Validators
     {
         public CreateOrderModelValidator()
         {
-            RuleFor(o => o.WalletId)
+            RuleFor(o => o.ClientId)
                 .NotEmpty()
-                .WithMessage("Wallet Id required.");
-            
+                .WithMessage("Client Id required.");
+
             RuleFor(o => o.PriceId)
                 .NotEmpty()
                 .WithMessage("Price Id required.");
-            
+
             RuleFor(o => o.QuotingVolume)
                 .GreaterThan(0m)
                 .WithMessage("Positive quoting volume required.");

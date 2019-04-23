@@ -7,12 +7,12 @@ namespace Lykke.Service.EasyBuy.Domain.Repositories
 {
     public interface IOrderRepository
     {
-        Task<Order> GetOrderByIdAsync(string orderId);
-
-        Task<IReadOnlyList<Order>> GetAllAsync(string walletId, string assetPair, DateTime? timeFrom, DateTime? timeTo,
-            int limit);
+        Task<Order> GetByIdAsync(string orderId);
 
         Task<IReadOnlyList<Order>> GetByStatusAsync(OrderStatus status);
+
+        Task<IReadOnlyList<Order>> GetAsync(string clientId, string assetPair, DateTime? dateFrom, DateTime? dateTo,
+            int skip, int take);
 
         Task InsertAsync(Order order);
 

@@ -12,9 +12,9 @@ namespace Lykke.Service.EasyBuy.Client.Api
     public interface IExchangesApi
     {
         /// <summary>
-        /// Provides ability to request available exchanges.
+        /// Returns a collection of available exchanges.
         /// </summary>
-        /// <returns>A list of available exchanges.</returns>
+        /// <returns>A list of exchanges.</returns>
         [Get("/api/exchanges")]
         Task<IReadOnlyList<string>> GetAsync();
     }

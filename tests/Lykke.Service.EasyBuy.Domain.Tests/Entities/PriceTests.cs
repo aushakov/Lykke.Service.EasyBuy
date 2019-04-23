@@ -51,7 +51,7 @@ namespace Lykke.Service.EasyBuy.Domain.Tests.Entities
             // act
 
             Price price = Price.Calculate(_orderBook, quoteVolume, markup, DateTime.UtcNow,
-                DateTime.UtcNow.AddSeconds(1), TimeSpan.FromSeconds(1), PriceAccuracy, VolumeAccuracy);
+                DateTime.UtcNow.AddSeconds(1), PriceAccuracy, VolumeAccuracy);
 
             // assert
 
@@ -78,7 +78,7 @@ namespace Lykke.Service.EasyBuy.Domain.Tests.Entities
             // act
 
             Price price = Price.Calculate(_orderBook, quoteVolume, markup, DateTime.UtcNow,
-                DateTime.UtcNow.AddSeconds(1), TimeSpan.FromSeconds(1), PriceAccuracy, VolumeAccuracy);
+                DateTime.UtcNow.AddSeconds(1), PriceAccuracy, VolumeAccuracy);
 
             // assert
 
@@ -86,7 +86,7 @@ namespace Lykke.Service.EasyBuy.Domain.Tests.Entities
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FailedOperationException), "Quoting volume required")]
+        [ExpectedException(typeof(FailedOperationException), "Quoting volume required.")]
         public void Calculate_With_Wrong_Quoting_Volume()
         {
             // arrange
@@ -103,11 +103,11 @@ namespace Lykke.Service.EasyBuy.Domain.Tests.Entities
             // act
 
             Price.Calculate(_orderBook, quoteVolume, markup, DateTime.UtcNow,
-                DateTime.UtcNow.AddSeconds(1), TimeSpan.FromSeconds(1), PriceAccuracy, VolumeAccuracy);
+                DateTime.UtcNow.AddSeconds(1), PriceAccuracy, VolumeAccuracy);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FailedOperationException), "Empty order book")]
+        [ExpectedException(typeof(FailedOperationException), "Empty order book.")]
         public void Calculate_With_Empty_Order_Book()
         {
             // arrange
@@ -118,11 +118,11 @@ namespace Lykke.Service.EasyBuy.Domain.Tests.Entities
             // act
 
             Price.Calculate(_orderBook, quoteVolume, markup, DateTime.UtcNow,
-                DateTime.UtcNow.AddSeconds(1), TimeSpan.FromSeconds(1), PriceAccuracy, VolumeAccuracy);
+                DateTime.UtcNow.AddSeconds(1), PriceAccuracy, VolumeAccuracy);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FailedOperationException), "No liquidity")]
+        [ExpectedException(typeof(FailedOperationException), "No liquidity.")]
         public void Calculate_With_No_Enough_Liquidity()
         {
             // arrange
@@ -140,7 +140,7 @@ namespace Lykke.Service.EasyBuy.Domain.Tests.Entities
             // act
 
             Price.Calculate(_orderBook, quoteVolume, markup, DateTime.UtcNow,
-                DateTime.UtcNow.AddSeconds(1), TimeSpan.FromSeconds(1), PriceAccuracy, VolumeAccuracy);
+                DateTime.UtcNow.AddSeconds(1), PriceAccuracy, VolumeAccuracy);
         }
     }
 }

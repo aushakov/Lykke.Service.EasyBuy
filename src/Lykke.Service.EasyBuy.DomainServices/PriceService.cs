@@ -21,7 +21,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
     {
         private readonly IPriceRepository _priceRepository;
         private readonly IOrderBookService _orderBookService;
-        private readonly IInstrumentSettingsService _instrumentSettingsService;
+        private readonly IInstrumentService _instrumentService;
         private readonly ISettingsService _settingsService;
         private readonly IAssetsReadModelRepository _assetsRepository;
         private readonly IAssetPairsReadModelRepository _assetPairsRepository;
@@ -33,7 +33,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
         public PriceService(
             IPriceRepository priceRepository,
             IOrderBookService orderBookService,
-            IInstrumentSettingsService instrumentSettingsService,
+            IInstrumentService instrumentService,
             ISettingsService settingsService,
             IAssetsReadModelRepository assetsRepository,
             IAssetPairsReadModelRepository assetPairsRepository,
@@ -42,7 +42,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
         {
             _priceRepository = priceRepository;
             _orderBookService = orderBookService;
-            _instrumentSettingsService = instrumentSettingsService;
+            _instrumentService = instrumentService;
             _settingsService = settingsService;
             _assetsRepository = assetsRepository;
             _assetPairsRepository = assetPairsRepository;
@@ -54,12 +54,12 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
         public async Task EnsureAsync(string assetPair, DateTime currentDate)
         {
-            InstrumentSettings instrumentSettings = await _instrumentSettingsService.GetByAssetPairAsync(assetPair);
+            Instrument instrument = await _instrumentService.GetByAssetPairAsync(assetPair);
 
-            if (instrumentSettings == null)
-                throw new FailedOperationException("Unknown instrument");
+            if (instrument == null)
+                throw new FailedOperationException("Unknown instrument.");
 
-            if (instrumentSettings.Status != InstrumentStatus.Active)
+            if (instrument.Status != InstrumentStatus.Active)
                 return;
 
             Price currentPrice = await GetByAssetPair(assetPair);
@@ -79,9 +79,9 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
             if (!expiredInRecalculationInterval)
             {
-                _log.WarningWithDetails("Price recalculation interval exceeded", new
+                _log.WarningWithDetails("Price recalculation interval exceeded.", new
                 {
-                    instrumentSettings.AssetPair,
+                    instrument.AssetPair,
                     CurrentPriceValidTo = currentPriceValidTo,
                     CurrentDate = currentDate,
                     ExpiredDuration = expiredDuration
@@ -90,22 +90,21 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
             DateTime validFrom = expiredInRecalculationInterval ? currentPriceValidTo : currentDate;
 
-            DateTime validTo = validFrom.Add(instrumentSettings.PriceLifetime);
+            DateTime validTo = validFrom.Add(instrument.Lifetime);
 
-            OrderBook orderBook =
-                _orderBookService.GetByAssetPairId(instrumentSettings.Exchange, instrumentSettings.AssetPair);
+            OrderBook orderBook = _orderBookService.GetByAssetPair(instrument.Exchange, instrument.AssetPair);
 
             if (orderBook == null)
                 return;
 
-            AssetPair assetPairSettings = _assetPairsRepository.TryGet(instrumentSettings.AssetPair);
+            AssetPair assetPairSettings = _assetPairsRepository.TryGet(instrument.AssetPair);
 
             Asset baseAssetSettings = _assetsRepository.TryGet(assetPairSettings.BaseAssetId);
 
-            Price price = Price.Calculate(orderBook, instrumentSettings.Volume, instrumentSettings.Markup, validFrom,
-                validTo, instrumentSettings.OverlapTime, assetPairSettings.Accuracy, baseAssetSettings.Accuracy);
+            Price price = Price.Calculate(orderBook, instrument.MaxQuoteVolume, instrument.Markup, validFrom, validTo,
+                assetPairSettings.Accuracy, baseAssetSettings.Accuracy);
 
-            _log.InfoWithDetails("Price calculated", price);
+            _log.InfoWithDetails("Price calculated.", price);
 
             await _priceRepository.InsertAsync(price);
 

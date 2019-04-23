@@ -6,56 +6,55 @@ using Newtonsoft.Json.Converters;
 namespace Lykke.Service.EasyBuy.Client.Models.Orders
 {
     /// <summary>
-    /// Represents user's order.
+    /// Represents an order.
     /// </summary>
     [PublicAPI]
     public class OrderModel
     {
         /// <summary>
-        /// Order's unique identifier.
+        /// The unique identifier of order.
         /// </summary>
-        public string Id { set; get; }
+        public string Id { get; set; }
 
         /// <summary>
-        /// Client's wallet Id.
+        /// The identifier of client.
         /// </summary>
-        public string WalletId { set; get; }
+        public string ClientId { get; set; }
 
         /// <summary>
-        /// Asset pair of the order.
+        /// The identifier of price.
         /// </summary>
-        public string AssetPair { set; get; }
+        public string PriceId { get; set; }
 
         /// <summary>
-        /// Type of the order.
+        /// The name of asset pair.
+        /// </summary> 
+        public string AssetPair { get; set; }
+
+        /// <summary>
+        /// The base asset volume.
+        /// </summary>
+        public decimal BaseVolume { get; set; }
+
+        /// <summary>
+        /// The quote asset volume.
+        /// </summary>
+        public decimal QuoteVolume { get; set; }
+
+        /// <summary>
+        /// The status of order.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
-        public OrderType Type { set; get; }
+        public OrderStatus Status { get; set; }
 
         /// <summary>
-        /// Id of the calculated price snapshot.
+        /// The details of error that occurred while processing order.
         /// </summary>
-        public string PriceId { set; get; }
+        public string Error { get; set; }
 
         /// <summary>
-        /// Desired volume of the order.
+        /// The date of order creation.
         /// </summary>
-        public decimal Volume { set; get; }
-
-        /// <summary>
-        /// Date and time of order creation.
-        /// </summary>
-        public DateTime CreatedTime { set; get; }
-
-        /// <summary>
-        /// Order status.
-        /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public OrderStatus Status { set; get; }
-
-        /// <summary>
-        /// Cancellation reason (if applicable).
-        /// </summary>
-        public string RejectReason { set; get; }
+        public DateTime CreatedDate { get; set; }
     }
 }

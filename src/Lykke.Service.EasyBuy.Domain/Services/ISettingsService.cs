@@ -1,6 +1,4 @@
 using System;
-using System.Threading.Tasks;
-using Lykke.Service.EasyBuy.Domain.Entities.Settings;
 
 namespace Lykke.Service.EasyBuy.Domain.Services
 {
@@ -12,8 +10,6 @@ namespace Lykke.Service.EasyBuy.Domain.Services
 
         TimeSpan GetRecalculationInterval();
 
-        Task<TimersSettings> GetTimersSettingsAsync();
-
-        Task UpdateTimersSettingsAsync(TimersSettings timersSettings);
+        TimeSpan GetOrderExecutionInterval();
     }
 }

@@ -7,7 +7,10 @@ EasyBuyService:
     
   RecalculationInterval:
     settings-key: EasyBuyService-RecalculationInterval
-
+  
+  OrderExecutionInterval:
+    settings-key: EasyBuyService-OrderExecutionInterval
+    
   Db:
     DataConnectionString:
       settings-key: EasyBuyService-DataConnectionString

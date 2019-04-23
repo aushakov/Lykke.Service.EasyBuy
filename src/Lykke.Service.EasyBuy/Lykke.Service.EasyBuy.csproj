@@ -25,8 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\client\Lykke.Service.EasyBuy.Client\Lykke.Service.EasyBuy.Client.csproj" />
     <ProjectReference Include="..\..\contract\Lykke.Service.EasyBuy.Contract\Lykke.Service.EasyBuy.Contract.csproj" />
-    <ProjectReference Include="..\Lykke.Service.EasyBuy.AzureRepositories\Lykke.Service.EasyBuy.AzureRepositories.csproj" />
     <ProjectReference Include="..\Lykke.Service.EasyBuy.Domain\Lykke.Service.EasyBuy.Domain.csproj" />
     <ProjectReference Include="..\Lykke.Service.EasyBuy.DomainServices\Lykke.Service.EasyBuy.DomainServices.csproj" />
+    <ProjectReference Include="..\Lykke.Service.EasyBuy.PostgresRepositories\Lykke.Service.EasyBuy.PostgresRepositories.csproj" />
   </ItemGroup>
 </Project>

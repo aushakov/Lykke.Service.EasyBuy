@@ -11,15 +11,18 @@ namespace Lykke.Service.EasyBuy.DomainServices
         private readonly string _instanceName;
         private readonly string _walletId;
         private readonly TimeSpan _recalculationInterval;
+        private readonly TimeSpan _orderExecutionInterval;
 
         public AutofacModule(
             string instanceName,
             string walletId,
-            TimeSpan recalculationInterval)
+            TimeSpan recalculationInterval,
+            TimeSpan orderExecutionInterval)
         {
             _instanceName = instanceName;
             _walletId = walletId;
             _recalculationInterval = recalculationInterval;
+            _orderExecutionInterval = orderExecutionInterval;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -28,20 +31,20 @@ namespace Lykke.Service.EasyBuy.DomainServices
                 .As<IBalancesService>()
                 .SingleInstance();
 
-            builder.RegisterType<InstrumentSettingsService>()
-                .As<IInstrumentSettingsService>()
+            builder.RegisterType<ExchangeService>()
+                .As<IExchangeService>()
                 .SingleInstance();
 
-            builder.RegisterType<InternalTransfersService>()
-                .As<IInternalTransfersService>()
+            builder.RegisterType<InstrumentService>()
+                .As<IInstrumentService>()
                 .SingleInstance();
 
             builder.RegisterType<OrderBookService>()
                 .As<IOrderBookService>()
                 .SingleInstance();
 
-            builder.RegisterType<OrdersService>()
-                .As<IOrdersService>()
+            builder.RegisterType<OrderService>()
+                .As<IOrderService>()
                 .SingleInstance();
 
             builder.RegisterType<PriceService>()
@@ -52,11 +55,8 @@ namespace Lykke.Service.EasyBuy.DomainServices
                 .WithParameter("instanceName", _instanceName)
                 .WithParameter("walletId", _walletId)
                 .WithParameter("recalculationInterval", _recalculationInterval)
+                .WithParameter("orderExecutionInterval", _orderExecutionInterval)
                 .As<ISettingsService>()
-                .SingleInstance();
-            
-            builder.RegisterType<TradeService>()
-                .As<ITradeService>()
                 .SingleInstance();
         }
     }

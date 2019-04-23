@@ -9,18 +9,18 @@ namespace Lykke.Service.EasyBuy.Client.Models.Balances
     public class BalanceModel
     {
         /// <summary>
-        /// Id of the asset.
+        /// The asset id.
         /// </summary>
-        public string AssetId { set; get; }
+        public string Asset { get; set; }
 
         /// <summary>
-        /// Available amount.
+        /// The amount of balance.
         /// </summary>
-        public decimal Available { set; get; }
+        public decimal Amount { get; set; }
 
         /// <summary>
-        /// Reserved amount.
+        /// The amount that currently are reserved.
         /// </summary>
-        public decimal Reserved { set; get; }
+        public decimal Reserved { get; set; }
     }
 }

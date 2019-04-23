@@ -30,10 +30,11 @@ namespace Lykke.Service.EasyBuy
             builder.RegisterModule(new DomainServices.AutofacModule(
                 _settings.CurrentValue.EasyBuyService.InstanceName,
                 _settings.CurrentValue.EasyBuyService.WalletId,
-                _settings.CurrentValue.EasyBuyService.RecalculationInterval));
+                _settings.CurrentValue.EasyBuyService.RecalculationInterval,
+                _settings.CurrentValue.EasyBuyService.OrderExecutionInterval));
 
-            builder.RegisterModule(new AzureRepositories.AutofacModule(_settings.Nested(o =>
-                o.EasyBuyService.Db.DataConnectionString)));
+            builder.RegisterModule(
+                new PostgresRepositories.AutofacModule(_settings.CurrentValue.EasyBuyService.Db.DataConnectionString));
 
             builder.RegisterType<StartupManager>()
                 .As<IStartupManager>();
@@ -82,7 +83,7 @@ namespace Lykke.Service.EasyBuy
             builder.RegisterExchangeOperationsClient(_settings.CurrentValue.ExchangeOperationsServiceClient.ServiceUrl);
         }
 
-        private void RegisterTimers(ContainerBuilder builder)
+        private static void RegisterTimers(ContainerBuilder builder)
         {
             builder.RegisterType<OrdersTimer>()
                 .AsSelf()

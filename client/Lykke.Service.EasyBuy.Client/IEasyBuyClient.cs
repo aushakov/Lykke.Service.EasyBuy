@@ -35,11 +35,6 @@ namespace Lykke.Service.EasyBuy.Client
         ISettingsApi SettingsApi { get; }
 
         /// <summary>
-        /// Provides methods to work with executed trades.
-        /// </summary>
-        ITradesApi TradesApi { get; }
-
-        /// <summary>
         /// Provides methods to work with exchanges.
         /// </summary>
         IExchangesApi ExchangesApi { get; }

@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Lykke.Common.Log;
-using Lykke.Service.EasyBuy.Domain.Entities.Settings;
 using Lykke.Service.EasyBuy.Domain.Services;
 
 namespace Lykke.Service.EasyBuy.Timers
@@ -12,29 +11,29 @@ namespace Lykke.Service.EasyBuy.Timers
     public class OrdersTimer : Timer
     {
         private readonly ISettingsService _settingsService;
-        private readonly IOrdersService _ordersService;
+        private readonly IOrderService _orderService;
 
         public OrdersTimer(
             ISettingsService settingsService,
-            IOrdersService ordersService,
+            IOrderService orderService,
             ILogFactory logFactory)
         {
             _settingsService = settingsService;
-            _ordersService = ordersService;
+            _orderService = orderService;
 
             Log = logFactory.CreateLog(this);
         }
 
         protected override Task OnExecuteAsync(CancellationToken cancellation)
         {
-            return _ordersService.ProcessPendingAsync();
+            return _orderService.ExecuteAsync();
         }
 
-        protected override async Task<TimeSpan> GetDelayAsync()
+        protected override Task<TimeSpan> GetDelayAsync()
         {
-            TimersSettings timersSettings = await _settingsService.GetTimersSettingsAsync();
+            TimeSpan orderExecutionInterval = _settingsService.GetOrderExecutionInterval();
 
-            return timersSettings.Orders;
+            return Task.FromResult(orderExecutionInterval);
         }
     }
 }

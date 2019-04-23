@@ -6,7 +6,7 @@ namespace Lykke.Service.EasyBuy.Domain.Services
 {
     public interface IOrderBookService
     {
-        OrderBook GetByAssetPairId(string exchange, string assetPairId);
+        OrderBook GetByAssetPair(string exchange, string assetPair);
 
         IReadOnlyList<string> GetExistingExchanges();
 

@@ -1,14 +1,13 @@
 using System;
 using FluentValidation;
 using JetBrains.Annotations;
-using Lykke.Service.EasyBuy.Client.Models;
 using Lykke.Service.EasyBuy.Client.Models.Instruments;
 using Lykke.Service.EasyBuy.Domain.Services;
 
 namespace Lykke.Service.EasyBuy.Validators
 {
     [UsedImplicitly]
-    public class InstrumentSettingsModelValidator : AbstractValidator<InstrumentSettingsModel>
+    public class InstrumentSettingsModelValidator : AbstractValidator<InstrumentModel>
     {
         public InstrumentSettingsModelValidator(ISettingsService settingsService)
         {
@@ -20,9 +19,9 @@ namespace Lykke.Service.EasyBuy.Validators
                 .NotEmpty()
                 .WithMessage("Exchange required.");
 
-            RuleFor(o => o.PriceLifetime)
+            RuleFor(o => o.Lifetime)
                 .GreaterThan(TimeSpan.Zero)
-                .WithMessage("Price lifetime should be greater than zero.");
+                .WithMessage("Lifetime should be greater than zero.");
 
             RuleFor(o => o.OverlapTime)
                 .GreaterThanOrEqualTo(TimeSpan.Zero)
@@ -32,9 +31,13 @@ namespace Lykke.Service.EasyBuy.Validators
                 .InclusiveBetween(0, 1)
                 .WithMessage("Markup should be between 0 and 1.");
 
-            RuleFor(o => o.Volume)
+            RuleFor(o => o.MinQuoteVolume)
                 .GreaterThan(0m)
-                .WithMessage("Volume should be greater than zero.");
+                .WithMessage("Min volume should be greater than zero.");
+
+            RuleFor(o => o.MaxQuoteVolume)
+                .GreaterThan(0m)
+                .WithMessage("Max volume should be greater than zero.");
 
             RuleFor(o => o.Status)
                 .NotEqual(InstrumentStatus.None)

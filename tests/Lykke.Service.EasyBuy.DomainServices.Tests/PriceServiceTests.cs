@@ -23,8 +23,8 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
         private readonly Mock<IOrderBookService> _orderBookServiceMock =
             new Mock<IOrderBookService>();
 
-        private readonly Mock<IInstrumentSettingsService> _instrumentSettingsServiceMock =
-            new Mock<IInstrumentSettingsService>();
+        private readonly Mock<IInstrumentService> _instrumentServiceMock =
+            new Mock<IInstrumentService>();
 
         private readonly Mock<ISettingsService> _settingsServiceMock =
             new Mock<ISettingsService>();
@@ -40,7 +40,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
 
         private OrderBook _orderBook;
 
-        private InstrumentSettings _instrumentSettings;
+        private Instrument _instrument;
 
         private Price _currentPrice;
 
@@ -71,26 +71,28 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
                 BuyLevels = new List<OrderBookLevel>()
             };
 
-            _instrumentSettings = new InstrumentSettings
+            _instrument = new Instrument
             {
+                Id = Guid.NewGuid().ToString(),
                 AssetPair = assetPairName,
                 Exchange = exchangeName,
-                PriceLifetime = TimeSpan.FromSeconds(20),
+                Lifetime = TimeSpan.FromSeconds(20),
                 OverlapTime = TimeSpan.FromSeconds(1),
                 Markup = 0.05m,
-                Volume = 10000,
+                MinQuoteVolume = 50,
+                MaxQuoteVolume = 10000,
                 Status = InstrumentStatus.Active
             };
 
             _recalculationInterval = TimeSpan.FromMilliseconds(500);
 
-            _orderBookServiceMock.Setup(o => o.GetByAssetPairId(It.IsAny<string>(), It.IsAny<string>()))
+            _orderBookServiceMock.Setup(o => o.GetByAssetPair(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns((string exchange, string assetPair) => _orderBook.AssetPair == assetPair ? _orderBook : null);
 
-            _instrumentSettingsServiceMock.Setup(o => o.GetByAssetPairAsync(It.IsAny<string>()))
+            _instrumentServiceMock.Setup(o => o.GetByAssetPairAsync(It.IsAny<string>()))
                 .Returns((string assetPair) =>
-                    Task.FromResult(_instrumentSettings.AssetPair == assetPair
-                        ? _instrumentSettings
+                    Task.FromResult(_instrument.AssetPair == assetPair
+                        ? _instrument
                         : null));
 
             _priceRepositoryMock.Setup(o => o.GetLatestAsync())
@@ -123,7 +125,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
             _service = new PriceService(
                 _priceRepositoryMock.Object,
                 _orderBookServiceMock.Object,
-                _instrumentSettingsServiceMock.Object,
+                _instrumentServiceMock.Object,
                 _settingsServiceMock.Object,
                 _assetsRepositoryMock.Object,
                 _assetPairsRepositoryMock.Object,
@@ -188,7 +190,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
             {
                 Id = Guid.NewGuid().ToString(),
                 AssetPair = _orderBook.AssetPair,
-                ValidTo = currentDate.AddMilliseconds(-_recalculationInterval.TotalMilliseconds/2d)
+                ValidTo = currentDate.AddMilliseconds(-_recalculationInterval.TotalMilliseconds / 2d)
             };
 
             // act
@@ -201,7 +203,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
 
             Assert.AreEqual(price.ValidFrom, _currentPrice.ValidTo);
         }
-        
+
         [TestMethod]
         public async Task Calculate_Next_Price_If_Prev_Price_Valid_To_Is_Greater_Than_Current_Date()
         {
@@ -213,7 +215,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
             {
                 Id = Guid.NewGuid().ToString(),
                 AssetPair = _orderBook.AssetPair,
-                ValidTo = currentDate.AddMilliseconds(_recalculationInterval.TotalMilliseconds/2d)
+                ValidTo = currentDate.AddMilliseconds(_recalculationInterval.TotalMilliseconds / 2d)
             };
 
             // act
@@ -226,7 +228,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
 
             Assert.AreEqual(price.ValidFrom, _currentPrice.ValidTo);
         }
-        
+
         [TestMethod]
         public async Task Calculate_New_Price_If_Prev_Price_Valid_To_Is_Less_Than_Current_Date()
         {
@@ -251,7 +253,7 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
 
             Assert.AreEqual(price.ValidFrom, currentDate);
         }
-        
+
         [TestMethod]
         public async Task Do_Not_Calculate_Next_Price_If_Prev_Price_Valid_To_Is_Greater_Than_Current_Date()
         {
@@ -276,12 +278,12 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
 
             Assert.AreEqual(price.Id, _currentPrice.Id);
         }
-        
+
         [TestMethod]
         public async Task Do_Not_Calculate_Price_If_Instrument_Disabled()
         {
             // arrange
-            
+
             DateTime currentDate = DateTime.UtcNow;
 
             _currentPrice = new Price
@@ -291,8 +293,8 @@ namespace Lykke.Service.EasyBuy.DomainServices.Tests
                 ValidTo = currentDate.AddMilliseconds(-(_recalculationInterval.TotalMilliseconds + 100))
             };
 
-            _instrumentSettings.Status = InstrumentStatus.Disabled;
-            
+            _instrument.Status = InstrumentStatus.Disabled;
+
             // act
 
             await _service.EnsureAsync(_orderBook.AssetPair, currentDate);
