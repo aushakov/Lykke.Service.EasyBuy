@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,6 +63,8 @@ namespace Lykke.Service.EasyBuy.DomainServices
             if (currentInstrument != null)
                 throw new EntityAlreadyExistsException();
 
+            instrument.Id = Guid.NewGuid().ToString();
+            
             await _instrumentRepository.InsertAsync(instrument);
 
             _cache.Set(instrument);

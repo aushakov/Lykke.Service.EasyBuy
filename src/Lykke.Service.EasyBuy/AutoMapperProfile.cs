@@ -24,6 +24,8 @@ namespace Lykke.Service.EasyBuy
             CreateMap<Order, OrderModel>(MemberList.Source);
 
             CreateMap<Price, PriceModel>(MemberList.Source);
+
+            CreateMap<Price, Contract.Price>(MemberList.Source);
         }
     }
 }
