@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Lykke.Service.EasyBuy.Domain.Entities.Orders;
+using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Repositories;
 using Lykke.Service.EasyBuy.PostgresRepositories.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace Lykke.Service.EasyBuy.PostgresRepositories.Repositories
         public async Task<Order> GetByIdAsync(string orderId)
         {
             if (!Guid.TryParse(orderId, out Guid id))
-                throw new ArgumentException("Invalid identifier", nameof(orderId));
+                throw new FailedOperationException("Invalid order identifier");
 
             using (DataContext context = _connectionFactory.CreateDataContext())
             {

@@ -40,9 +40,9 @@ namespace Lykke.Service.EasyBuy.Controllers
         [HttpGet("{assetPairId}")]
         [ProducesResponseType(typeof(InstrumentModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponse), (int) HttpStatusCode.NotFound)]
-        public async Task<InstrumentModel> GetByAssetPairAsync(string assetPairId)
+        public async Task<InstrumentModel> GetByIdAsync(string instrumentId)
         {
-            Instrument instrument = await _instrumentService.GetByAssetPairAsync(assetPairId);
+            Instrument instrument = await _instrumentService.GetByIdAsync(instrumentId);
 
             if (instrument == null)
                 throw new ValidationApiException(HttpStatusCode.NotFound, "Instrument does not exist.");

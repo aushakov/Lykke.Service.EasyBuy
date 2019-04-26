@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Lykke.Service.EasyBuy.Domain.Entities.Instruments;
+using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Repositories;
 using Lykke.Service.EasyBuy.PostgresRepositories.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace Lykke.Service.EasyBuy.PostgresRepositories.Repositories
         public async Task<Instrument> GetByIdAsync(string instrumentId)
         {
             if (!Guid.TryParse(instrumentId, out Guid id))
-                throw new ArgumentException("Invalid identifier", nameof(instrumentId));
+                throw new FailedOperationException("Invalid instrument identifier");
 
             using (DataContext context = _connectionFactory.CreateDataContext())
             {

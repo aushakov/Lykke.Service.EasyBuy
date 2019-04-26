@@ -49,6 +49,13 @@ namespace Lykke.Service.EasyBuy.DomainServices
             return instruments.Where(o => o.Status == InstrumentStatus.Active).ToList();
         }
 
+        public async Task<Instrument> GetByIdAsync(string instrumentId)
+        {
+            IReadOnlyList<Instrument> instruments = await GetAllAsync();
+
+            return instruments.FirstOrDefault(o => o.Id == instrumentId);
+        }
+
         public async Task<Instrument> GetByAssetPairAsync(string assetPair)
         {
             IReadOnlyList<Instrument> instruments = await GetAllAsync();
@@ -64,7 +71,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
                 throw new EntityAlreadyExistsException();
 
             instrument.Id = Guid.NewGuid().ToString();
-            
+
             await _instrumentRepository.InsertAsync(instrument);
 
             _cache.Set(instrument);
@@ -74,7 +81,7 @@ namespace Lykke.Service.EasyBuy.DomainServices
 
         public async Task UpdateAsync(Instrument instrument)
         {
-            Instrument currentInstrument = await GetByAssetPairAsync(instrument.AssetPair);
+            Instrument currentInstrument = await GetByIdAsync(instrument.Id);
 
             if (currentInstrument == null)
                 throw new EntityNotFoundException();

@@ -10,6 +10,8 @@ namespace Lykke.Service.EasyBuy.Domain.Services
 
         Task<IReadOnlyList<Instrument>> GetActiveAsync();
 
+        Task<Instrument> GetByIdAsync(string instrumentId);
+
         Task<Instrument> GetByAssetPairAsync(string assetPair);
 
         Task AddAsync(Instrument instrument);

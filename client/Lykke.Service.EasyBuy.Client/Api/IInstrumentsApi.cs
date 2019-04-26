@@ -21,13 +21,13 @@ namespace Lykke.Service.EasyBuy.Client.Api
         Task<IReadOnlyList<InstrumentModel>> GetAllAsync();
 
         /// <summary>
-        /// Returns an instrument by asset pair identifier.
+        /// Returns an instrument by identifier.
         /// </summary>
-        /// <param name="assetPair">The identifier of asses pair.</param>
+        /// <param name="instrumentId">The identifier of instrument.</param>
         /// <returns>An instrument.</returns>
         /// <exception cref="ClientApiException">If instrument does not exist.</exception>
-        [Get("/api/instruments/{assetPair}")]
-        Task<InstrumentModel> GetByAssetPairAsync(string assetPair);
+        [Get("/api/instruments/{instrumentId}")]
+        Task<InstrumentModel> GetByIdAsync(string instrumentId);
 
         /// <summary>
         /// Adds new instrument settings.

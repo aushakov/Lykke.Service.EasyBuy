@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Lykke.Service.EasyBuy.Domain.Entities.Prices;
+using Lykke.Service.EasyBuy.Domain.Exceptions;
 using Lykke.Service.EasyBuy.Domain.Repositories;
 using Lykke.Service.EasyBuy.PostgresRepositories.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,7 @@ namespace Lykke.Service.EasyBuy.PostgresRepositories.Repositories
         public async Task<Price> GetByIdAsync(string priceId)
         {
             if (!Guid.TryParse(priceId, out Guid id))
-                throw new ArgumentException("Invalid identifier", nameof(priceId));
+                throw new FailedOperationException("Invalid price identifier");
 
             using (DataContext context = _connectionFactory.CreateDataContext())
             {
